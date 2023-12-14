@@ -1,4 +1,6 @@
+"use client"
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 
 interface MessageProps {
@@ -23,7 +25,7 @@ function AIMessage({ text }: { text: string }) {
     <div className="flex flex-col w-5/6 items-start bg-green-200 h-full">
       <div className="bg-blue-400 min-h-[40px]">icon</div>
       <div className="bg-gray-800 py-2 px-4 w-full rounded-lg h-full min-h-[80px]">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
           {text}
         </ReactMarkdown>
       </div>
