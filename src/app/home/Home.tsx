@@ -8,21 +8,21 @@ import { Search } from "../search/Search";
 import { Code } from "../code/Code";
 
 export interface State {
-    current_app: string
+    current_app: string;
 }
   
 export interface Actions {
     type: string;
-    target_app: string
+    target_app: string;
 }
 
 function reducer (state: State, action: Actions): State {
     switch (action.type) {
         case "switch_app":
-        return {
-            ...state,
-            current_app: action.target_app
-        };
+            return {
+                ...state,
+                current_app: action.target_app
+            };
         default:
         return state;
     }
@@ -30,7 +30,7 @@ function reducer (state: State, action: Actions): State {
 
 export function HomeLoggedIn({userEmail, userImage, userName}: {userEmail: string | null | undefined, userImage: string | null | undefined, userName: string | null | undefined}) {
     const [state, dispatch] = useReducer(reducer, {
-        current_app: "chat"
+        current_app: "search"
     });
 
     const user = {

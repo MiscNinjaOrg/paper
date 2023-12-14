@@ -1,5 +1,8 @@
+
+"use client"
+
 import { useRef, KeyboardEvent, useContext } from "react";
-import TextareaAutosize from "react-textarea-autosize"
+import { TextareaAutosize } from "@mui/base";
 import { PuffLoader } from "react-spinners";
 import { StateContext, DispatchContext } from "./Context";
 import { State } from "./Chat";
@@ -42,8 +45,6 @@ export default function InputBox() {
                 dispatch({ type: "addMessage", payload: { prompt, controller }});
                 promptInput.current.value = "";
 
-                console.log(state.messages, prompt);
-                
                 const res = await fetch("/api/chat/openai", {
                     method: "POST",
                     body: JSON.stringify({messages: state.messages, prompt}),
@@ -78,7 +79,7 @@ export default function InputBox() {
             ref={promptInput}
             name="prompt"
             id="prompt"
-            rows={1}
+            minRows={1}
             maxRows={4}
             onKeyDown={async (e: KeyboardEvent<HTMLTextAreaElement>) => {
                 e.stopPropagation();
@@ -87,7 +88,7 @@ export default function InputBox() {
                     handlePrompt();
                 }
             }}
-            className="bg-red-400 resize-none pl-6 pr-6 pt-3 pb-3 ml-4 mr-4 h-full w-full rounded-full text-xl font-mono"
+            className="bg-red-400 resize-none pl-6 pr-6 pt-3 pb-3 ml-4 mr-4 h-full w-full rounded-full text-lg font-mono"
             placeholder="What's up?"
             defaultValue=""
             />
