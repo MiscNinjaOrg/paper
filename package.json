@@ -9,10 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mozilla/readability": "^0.4.4",
     "@mui/base": "^5.0.0-beta.27",
     "@types/bcrypt": "^5.0.2",
+    "@types/jsdom": "^21.1.6",
     "ai": "^2.2.29",
     "bcrypt": "^5.1.1",
+    "jsdom": "^23.0.1",
     "mongodb": "^6.3.0",
     "next": "14.0.4",
     "next-auth": "^4.24.5",
