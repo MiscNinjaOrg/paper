@@ -43,8 +43,8 @@ function SearchAnswer({answer}: {answer: string | null}) {
 function SearchSources({sources}: {sources: any}) {
     return (
          <div className="bg-red-100 w-full h-full">
-            {sources.map((source: any) => (
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+            {sources.map((source: any, i: number) => (
+            <ReactMarkdown key={i} remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {`[Source ${source.position}: ${source.title}](${source.link})` as string}
             </ReactMarkdown>
             ))}
