@@ -61,7 +61,7 @@ export function SearchResults({handleSearch}: {handleSearch: (ref: RefObject<HTM
                 <SearchBox handleSearch={handleSearch} prevQuery={state.query as string}/> 
             </div>
             <div className="flex flex-col w-full bg-green-100 h-full text-black">
-                <SearchAnswer answer={state.answer} />
+                <SearchAnswer answer={state.answer?.split("Sources:")[0] as string} />
                 <SearchSources sources={state.sources}/>
             </div>
         </div>

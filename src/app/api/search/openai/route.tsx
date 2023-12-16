@@ -28,7 +28,7 @@ async function scrapeAndClean(searchResult: any) {
     // console.log(parsed?.textContent.slice(0, 500));
 
     const title = searchResult.title;
-    const snippet = cleaned.slice(0, 800);
+    const snippet = cleaned.slice(0, 1000);
     const idx = searchResult.position;
 
     return {idx: idx, title: title, snippet: snippet};
@@ -36,11 +36,11 @@ async function scrapeAndClean(searchResult: any) {
 
 function constructPrompt(query:string, snippets: {idx: number, title: string, snippet: string}[]) {
     const prompt = `
-I want to know about the following query. Use the following articles to answer the given query as best as possible. Be original, concise, accurate and helpful. Wherever applicable, cite the articles as sources only after the relevant sentences in square brackets (e.g. sentence [1][2]).
+I want to know about the following query. Use the following sources to answer the given query as best as possible. Be original, concise, accurate and helpful. Wherever applicable, cite the articles as sources only after the relevant sentences in square brackets (e.g. sentence [1][2]).
 
 Query: ${query}
 
-${snippets.map((s) => `Article ${s.idx}:\n${s.snippet}`).join("\n\n")}
+${snippets.map((s) => `Source ${s.idx}:\n${s.snippet}`).join("\n\n")}
     `;
 
     return prompt
