@@ -28,7 +28,7 @@ async function scrapeAndClean(searchResult: any) {
     // console.log(parsed?.textContent.slice(0, 500));
 
     const title = searchResult.title;
-    const snippet = cleaned.slice(0, 1000);
+    const snippet = cleaned.slice(0, 200);
     const idx = searchResult.position;
 
     return {idx: idx, title: title, snippet: snippet};
@@ -53,7 +53,7 @@ export async function POST(req: Request) {
 
     const snippets = (await Promise.all(sources.map(scrapeAndClean))).filter((snippet: any) => snippet.idx != -1);
 
-    const prompt = constructPrompt(query, snippets.slice(0, 6));
+    const prompt = constructPrompt(query, snippets.slice(0, 4));
 
     console.log(prompt)
     const response = await openai.chat.completions.create({
