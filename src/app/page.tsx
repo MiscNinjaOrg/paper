@@ -1,6 +1,6 @@
 "use server"
 import { HomeLoggedIn, HomeLoggedOut } from './home/Home'
-import { authOptions } from './api/auth/[...nextauth]/route'
+import { authOptions } from '../../auth'
 import { getServerSession } from 'next-auth/next'
 
 export interface User {
