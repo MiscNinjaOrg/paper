@@ -5,6 +5,7 @@ Detailed instructions on building coming soon.
 For now, just use the image from Docker Hub
 
 ```
+docker pull lordspline/miscninja-paper
 docker run -d -p 80:80 lordspline/miscninja-paper
 ```
 
