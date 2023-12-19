@@ -7,6 +7,8 @@ import { ConfigBar } from "./ConfigBar";
 // this state-action reducer is supposed to handle the current state of the entire search app - including the current query (and whether or not we are on the initial screen), the current search results (both the sources and the answer being streamed)
 export interface State {
     initial: boolean;
+    model_name: string;
+    openai_api_key: string | null;
     query: string | null;
     sources: any | null;
     answer: string | null;
@@ -14,12 +16,14 @@ export interface State {
 }
 
 type UpdateInitial = {type: "update_initial"};
+type UpdateModel = {type: "update_model", model_name: string};
+type UpdateOpenAIAPIKey = {type: "update_openai_api_key", openai_api_key: string}
 type UpdateQuery = {type: "update_query", query: string};
 type ClearAnswer = {type: "clear_answer"};
 type UpdateSources = {type: "update_sources", sources: any};
 type UpdateAnswer = {type: "update_answer", answer: string};
 type ToggleConfig = {type: "toggle_config"};
-export type Actions = UpdateInitial | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig;
+export type Actions = UpdateInitial | UpdateModel | UpdateOpenAIAPIKey | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig;
 
 function reducer(state:State, action: Actions): State {
     switch (action.type) {
@@ -27,6 +31,16 @@ function reducer(state:State, action: Actions): State {
             return {
                 ...state,
                 initial: false
+            };
+        case "update_model":
+            return {
+                ...state,
+                model_name: action.model_name
+            };
+        case "update_openai_api_key":
+            return {
+                ...state,
+                openai_api_key: action.openai_api_key
             };
         case "update_query":
             return {
@@ -65,7 +79,7 @@ function reducer(state:State, action: Actions): State {
 
 export function Search() {
 
-    const [state, dispatch] = useReducer(reducer, {initial: true, query: null, sources: null, answer: null, config_visible: false});
+    const [state, dispatch] = useReducer(reducer, {initial: true, model_name: "gpt-3.5-turbo", openai_api_key: null, query: null, sources: null, answer: null, config_visible: false});
 
     const handleSearch = async (ref: RefObject<HTMLTextAreaElement>) => {
             if (ref && ref.current) {
@@ -82,11 +96,23 @@ export function Search() {
                     dispatch({type: "clear_answer"});
                     dispatch({type: "update_query", query: query});
 
-                    const res = await fetch("/api/search/openai", {
-                        method: "POST",
-                        body: JSON.stringify({query: query, sources: serpResults})
-                    });
-                    const data = res.body;
+                    let res: Response
+                    let data = null
+                    if (state.model_name === "gpt-3.5-turbo") {
+                        res = await fetch("/api/search/openai/gpt-3.5-turbo", {
+                            method: "POST",
+                            body: JSON.stringify({query: query, sources: serpResults, api_key: state.openai_api_key})
+                        });
+                        data = res.body;
+                    }
+                    else if (state.model_name === "gpt-4") {
+                        res = await fetch("/api/search/openai/gpt-4", {
+                            method: "POST",
+                            body: JSON.stringify({query: query, sources: serpResults, api_key: state.openai_api_key})
+                        });
+                        data = res.body;
+                    }
+
                     if (!data) {
                         return;
                     }

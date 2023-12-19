@@ -4,8 +4,6 @@ import OpenAI from "openai";
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 
-const openai = new OpenAI();
-
 async function scrapeAndClean(searchResult: any) {
     const response = await fetch(searchResult.link as string);
     const html = await response.text();
@@ -50,6 +48,14 @@ export async function POST(req: Request) {
     const body = await req.json();
     const query = body.query;
     const sources = body.sources;
+
+    let openai: OpenAI;
+    if (body.api_key) {
+        openai = new OpenAI({apiKey: body.api_key});
+    }
+    else {
+        openai = new OpenAI();
+    }
 
     const snippets = (await Promise.all(sources.map(scrapeAndClean))).filter((snippet: any) => snippet.idx != -1);
 

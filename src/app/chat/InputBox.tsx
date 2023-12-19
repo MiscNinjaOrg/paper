@@ -45,12 +45,23 @@ export default function InputBox() {
                 dispatch({ type: "addMessage", payload: { prompt, controller }});
                 promptInput.current.value = "";
 
-                const res = await fetch("/api/chat/openai", {
-                    method: "POST",
-                    body: JSON.stringify({messages: state.messages, prompt}),
-                    signal: signal
-                })
-                const data = res.body;
+                let res: Response
+                let data = null
+                if (state.model_name === "gpt-3.5-turbo") {
+                    res = await fetch("/api/chat/openai/gpt-3.5-turbo", {
+                        method: "POST",
+                        body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: state.openai_api_key})
+                    });
+                    data = res.body;
+                }
+                else if (state.model_name === "gpt-4") {
+                    res = await fetch("/api/chat/openai/gpt-4", {
+                        method: "POST",
+                        body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: state.openai_api_key})
+                    });
+                    data = res.body;
+                }
+
                 if (!data) {
                     return;
                 }

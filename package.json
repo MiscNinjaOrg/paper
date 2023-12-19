@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
     "@mozilla/readability": "^0.4.4",
     "@mui/base": "^5.0.0-beta.27",
+    "@mui/material": "^5.15.1",
     "@types/bcrypt": "^5.0.2",
     "@types/jsdom": "^21.1.6",
     "ai": "^2.2.29",

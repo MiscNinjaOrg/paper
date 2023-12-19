@@ -1,9 +1,6 @@
-import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { Message } from "@/app/chat/Chat";
-
-const openai = new OpenAI();
 
 const messageMap = (message: Message) => {
     let role: string;
@@ -18,10 +15,18 @@ const messageMap = (message: Message) => {
     return {role: role, content: message.text}
 }
 
-export async function POST(req: Request, res: NextResponse) {
+export async function POST(req: Request) {
     const body = await req.json();
     const messages = body.messages;
     const prompt = body.prompt;
+
+    let openai: OpenAI;
+    if (body.api_key) {
+        openai = new OpenAI({apiKey: body.api_key});
+    }
+    else {
+        openai = new OpenAI();
+    }
 
     const _messages = messages.map(messageMap);
     const _prompt = [{role: "user", content: prompt}];

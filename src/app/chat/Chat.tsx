@@ -13,6 +13,8 @@ export interface Message {
 
 // this state-action reducer is meant to handle the current state of the entire chat app - including all the messages, whether the model is currently thinking or writing, and an abort controller (may remove this though)
 export interface State {
+    model_name: string;
+    openai_api_key: string | null;
     messages: Message[] | [];
     controller: AbortController | null;
     thinking: boolean;
@@ -20,6 +22,8 @@ export interface State {
     config_visible: boolean;
 }
 
+type UpdateModel = {type: "update_model", model_name: string};
+type UpdateOpenAIAPIKey = {type: "update_openai_api_key", openai_api_key: string}
 type AddMessage = {
     type: "addMessage";
     payload: { prompt: string; controller: AbortController };
@@ -28,10 +32,20 @@ type UpdateAnswer = { type: "updateAnswer"; payload: string };
 type Abort = { type: "abort" };
 type Done = { type: "done" };
 type ToggleConfig = {type: "toggle_config"};
-export type Actions = AddMessage | UpdateAnswer | Abort | Done | ToggleConfig;
+export type Actions = UpdateModel | UpdateOpenAIAPIKey | AddMessage | UpdateAnswer | Abort | Done | ToggleConfig;
 
 function reducer(state: State, action: Actions): State {
     switch(action.type) {
+        case "update_model":
+            return {
+                ...state,
+                model_name: action.model_name
+            };
+        case "update_openai_api_key":
+            return {
+                ...state,
+                openai_api_key: action.openai_api_key
+            };
         case "addMessage":
             return {
                 ...state,
@@ -83,6 +97,8 @@ function reducer(state: State, action: Actions): State {
 export function Chat() {
 
     const [state, dispatch] = useReducer(reducer, {
+        model_name: "gpt-3.5-turbo", 
+        openai_api_key: null,
         messages: [
             // {name: "system", text: ""}
         ],
