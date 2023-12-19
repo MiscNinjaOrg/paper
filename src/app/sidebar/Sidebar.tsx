@@ -11,6 +11,7 @@ function AppIcon() {
     )
 }
 
+// for when deploying with next auth - usercontext gives us the user details
 export function SidebarLoggedIn() {
 
     const user = useContext(UserContext);
@@ -35,6 +36,24 @@ export function SidebarLoggedIn() {
     )
 }
 
+// for when deploying locally with no auth required
+export function SidebarNoAuth() {
+    const state = useContext(StateContext);
+    const dispatch = useContext(DispatchContext);
+
+    return (
+        <div className="flex h-screen min-w-[100px] flex-col justify-between items-center bg-blue-200">
+            <div className="flex-auto justify-center items-center bg-green-600 w-full">
+                <AppIcon />
+                <SearchButton onClick={() => {dispatch({type: "switch_app", target_app: "search"})}}/>
+                <ChatButton onClick={() => {dispatch({type: "switch_app", target_app: "chat"})}}/>
+                <CodeButton onClick={() => {dispatch({type: "switch_app", target_app: "code"})}}/>
+            </div>
+        </div>
+    )
+}
+
+// when deploying with auth but logged out
 export function SidebarLoggedOut() {
     return (
         <div className="flex h-screen min-w-[100px] flex-col justify-between items-center bg-blue-200">

@@ -32,7 +32,7 @@ export function SearchBox({handleSearch, prevQuery}: {handleSearch: (ref: RefObj
 
 function SearchAnswer({answer}: {answer: string | null}) {
     return (
-        <div className="bg-red-100 w-full h-full">
+        <div className="w-full h-full">
             <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
             {answer}
             </ReactMarkdown>
@@ -42,7 +42,7 @@ function SearchAnswer({answer}: {answer: string | null}) {
 
 function SearchSources({sources}: {sources: any}) {
     return (
-         <div className="bg-red-100 w-full h-full">
+         <div className="w-full h-full">
             {sources.map((source: any, i: number) => (
             <ReactMarkdown key={i} remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                 {`[Source ${source.position}: ${source.title}](${source.link})` as string}

@@ -4,17 +4,20 @@ import ChatBox from "./ChatBox"
 import Message from "./Message"
 import { useReducer } from "react";
 import { StateContext, DispatchContext } from "./Context";
+import { ConfigBar } from "./ConfigBar";
 
 export interface Message {
     name: "human" | "ai" | "system";
     text: string;
-  }
+}
 
+// this state-action reducer is meant to handle the current state of the entire chat app - including all the messages, whether the model is currently thinking or writing, and an abort controller (may remove this though)
 export interface State {
     messages: Message[] | [];
     controller: AbortController | null;
     thinking: boolean;
     writing: boolean;
+    config_visible: boolean;
 }
 
 type AddMessage = {
@@ -24,7 +27,8 @@ type AddMessage = {
 type UpdateAnswer = { type: "updateAnswer"; payload: string };
 type Abort = { type: "abort" };
 type Done = { type: "done" };
-export type Actions = AddMessage | UpdateAnswer | Abort | Done;
+type ToggleConfig = {type: "toggle_config"};
+export type Actions = AddMessage | UpdateAnswer | Abort | Done | ToggleConfig;
 
 function reducer(state: State, action: Actions): State {
     switch(action.type) {
@@ -66,6 +70,11 @@ function reducer(state: State, action: Actions): State {
                 writing: false,
                 controller: null
             };
+        case "toggle_config":
+            return {
+                ...state,
+                config_visible: !state.config_visible
+            };
         default:
             return state;
     }
@@ -79,7 +88,8 @@ export function Chat() {
         ],
         controller: null,
         thinking: false,
-        writing: false
+        writing: false,
+        config_visible: false
     });
 
 
@@ -90,6 +100,7 @@ export function Chat() {
                     <ChatBox />
                     <InputBox />
                 </div>
+                <ConfigBar />
             </DispatchContext.Provider>
         </StateContext.Provider>
     )

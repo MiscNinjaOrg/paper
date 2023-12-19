@@ -2,12 +2,15 @@ import { SearchInitial } from "./SearchInitial";
 import { SearchResults } from "./SearchResults";
 import { StateContext, DispatchContext } from "./Context";
 import { RefObject, useReducer } from "react";
+import { ConfigBar } from "./ConfigBar";
 
+// this state-action reducer is supposed to handle the current state of the entire search app - including the current query (and whether or not we are on the initial screen), the current search results (both the sources and the answer being streamed)
 export interface State {
     initial: boolean;
     query: string | null;
     sources: any | null;
     answer: string | null;
+    config_visible: boolean;
 }
 
 type UpdateInitial = {type: "update_initial"};
@@ -15,7 +18,8 @@ type UpdateQuery = {type: "update_query", query: string};
 type ClearAnswer = {type: "clear_answer"};
 type UpdateSources = {type: "update_sources", sources: any};
 type UpdateAnswer = {type: "update_answer", answer: string};
-export type Actions = UpdateInitial | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer;
+type ToggleConfig = {type: "toggle_config"};
+export type Actions = UpdateInitial | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig;
 
 function reducer(state:State, action: Actions): State {
     switch (action.type) {
@@ -49,6 +53,11 @@ function reducer(state:State, action: Actions): State {
                 ...state,
                 sources: action.sources
             };
+        case "toggle_config":
+            return {
+                ...state,
+                config_visible: !state.config_visible
+            };
         default:
             return state;
     }
@@ -56,7 +65,7 @@ function reducer(state:State, action: Actions): State {
 
 export function Search() {
 
-    const [state, dispatch] = useReducer(reducer, {initial: true, query: null, sources: null, answer: null});
+    const [state, dispatch] = useReducer(reducer, {initial: true, query: null, sources: null, answer: null, config_visible: false});
 
     const handleSearch = async (ref: RefObject<HTMLTextAreaElement>) => {
             if (ref && ref.current) {
@@ -99,10 +108,13 @@ export function Search() {
     return (
         <StateContext.Provider value={state}>
             <DispatchContext.Provider value={dispatch}>
-                {state.initial ?
-                <SearchInitial handleSearch={handleSearch}/> : 
-                <SearchResults handleSearch={handleSearch}/>}
-            </DispatchContext.Provider>
+                <div className="flex w-full bg-red-100">
+                    {state.initial ?
+                    <SearchInitial handleSearch={handleSearch}/> : 
+                    <SearchResults handleSearch={handleSearch}/>}
+                    <ConfigBar />
+                </div>
+           </DispatchContext.Provider>
         </StateContext.Provider>
     )
 }
