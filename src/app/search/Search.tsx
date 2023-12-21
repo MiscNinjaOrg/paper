@@ -1,7 +1,7 @@
 import { SearchInitial } from "./SearchInitial";
 import { SearchResults } from "./SearchResults";
 import { StateContext, DispatchContext } from "./Context";
-import { RefObject, useReducer } from "react";
+import { Dispatch, RefObject, useEffect, useReducer } from "react";
 import { ConfigBar } from "./ConfigBar";
 
 // this state-action reducer is supposed to handle the current state of the entire search app - including the current query (and whether or not we are on the initial screen), the current search results (both the sources and the answer being streamed)
@@ -55,7 +55,7 @@ function reducer(state:State, action: Actions): State {
         case "update_answer":
             let answerUpdated = String(state.answer) + action.answer;
             for (let i = 1; i <= state.sources.length; i++) {
-                answerUpdated = answerUpdated.replaceAll(`[${i}]`, `<span className="bg-blue-300 hover:bg-blue-500"><a href="${state.sources[i-1].link}" target="_blank" rel="noopener noreferrer">Source ${i}</a></span>`);
+                answerUpdated = answerUpdated.replaceAll(`[${i}]`, `<span className="bg-blue-300 hover:bg-blue-500 text-xs p-1 rounded-xl"><a href="${state.sources[i-1].link}" target="_blank" rel="noopener noreferrer">Source ${i}</a></span>`);
             }
             answerUpdated = answerUpdated.split("Sources: ")[0]
             return {
@@ -79,7 +79,20 @@ function reducer(state:State, action: Actions): State {
 
 export function Search() {
 
-    const [state, dispatch] = useReducer(reducer, {initial: true, model_name: "gpt-3.5-turbo", openai_api_key: null, query: null, sources: null, answer: null, config_visible: false});
+    let state: State;
+    let dispatch: Dispatch<Actions>;
+    const local_search_state = localStorage.getItem('search_state');
+    if (local_search_state !== 'undefined' && local_search_state && JSON.parse(local_search_state).initial === false) {
+        [state, dispatch] = useReducer(reducer, JSON.parse(local_search_state));
+        console.log("local_search_state");
+    }
+    else {
+        [state, dispatch] = useReducer(reducer, {initial: true, model_name: "gpt-3.5-turbo", openai_api_key: null, query: null, sources: null, answer: null, config_visible: false});
+    }
+
+    useEffect(() => {
+        localStorage.setItem("search_state", JSON.stringify(state));
+    }, [state]);
 
     const handleSearch = async (ref: RefObject<HTMLTextAreaElement>) => {
             if (ref && ref.current) {
