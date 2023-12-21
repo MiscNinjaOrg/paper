@@ -96,33 +96,21 @@ function reducer(state: State, action: Actions): State {
 
 export function Chat() {
 
-    // const [state, dispatch] = useReducer(reducer, {
-    //     model_name: "gpt-3.5-turbo", 
-    //     openai_api_key: null,
-    //     messages: [
-    //         // {name: "system", text: ""}
-    //     ],
-    //     controller: null,
-    //     thinking: false,
-    //     writing: false,
-    //     config_visible: false
-    // });
-
-    let state: State;
-    let dispatch: Dispatch<Actions>;
-    const local_chat_state = localStorage.getItem('chat_state');
+    let state_to_use: State;
+    const local_chat_state = sessionStorage.getItem('chat_state');
     if (local_chat_state !== 'undefined' && local_chat_state) {
-        [state, dispatch] = useReducer(reducer, JSON.parse(local_chat_state));
-        console.log("local_chat_State");
+        state_to_use = JSON.parse(local_chat_state);
     }
     else {
-        [state, dispatch] = useReducer(reducer, {model_name: "gpt-3.5-turbo", openai_api_key: null, messages: [
+        state_to_use = {model_name: "gpt-3.5-turbo", openai_api_key: null, messages: [
                 // {name: "system", text: ""}
-            ], controller: null, thinking: false, writing: false, config_visible: false});
+            ], controller: null, thinking: false, writing: false, config_visible: false};
     }
 
+    const [state, dispatch] = useReducer(reducer, state_to_use);
+    
     useEffect(() => {
-        localStorage.setItem("chat_state", JSON.stringify(state));
+        sessionStorage.setItem("chat_state", JSON.stringify(state));
     }, [state]);
 
 

@@ -50,7 +50,7 @@ function SearchSources({sources}: {sources: any}) {
             //     ${source.snippet}` as string
             //     }
             // </ReactMarkdown>
-            <div className="bg-green-100 my-2 p-4 rounded-lg">
+            <div key={i} className="bg-green-100 my-2 p-4 rounded-lg">
                 Source {source.position}: <br/>
                 <a href={source.link} className="underline bg-blue-100 bg-opacity-0 hover:bg-opacity-100">
                     {source.title}

@@ -17,9 +17,9 @@ export async function POST(req: Request) {
     redirect: 'follow'
     } as RequestInit;
 
-    const searchResponse = await fetch("https://google.serper.dev/search", requestOptions);
+    const searchResponse = await fetch("https://google.serper.dev/news", requestOptions);
     const searchJSON = await searchResponse.json();
-    const searchResults = searchJSON.organic;
+    const searchResults = searchJSON.news;
 
     return Response.json(searchResults);
 }
