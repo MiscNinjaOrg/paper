@@ -4,12 +4,17 @@ import { StateContext, DispatchContext } from "./Context";
 import { Dispatch, RefObject, useEffect, useReducer } from "react";
 import { ConfigBar } from "./ConfigBar";
 
+interface Dictionary<T> {
+    [Key: string]: T;
+}
+
 // this state-action reducer is supposed to handle the current state of the entire search app - including the current query (and whether or not we are on the initial screen), the current search results (both the sources and the answer being streamed)
 export interface State {
     initial: boolean;
     recs: any | null;
+    model_provider_name: string;
     model_name: string;
-    openai_api_key: string | null;
+    api_keys: Dictionary<string>;
     query: string | null;
     sources: any | null;
     answer: string | null;
@@ -18,14 +23,15 @@ export interface State {
 
 type UpdateInitial = {type: "update_initial"};
 type UpdateRecs = {type: "update_recs", recs: any};
+type UpdateModelProvider = {type: "update_model_provider", model_provider_name: string};
 type UpdateModel = {type: "update_model", model_name: string};
-type UpdateOpenAIAPIKey = {type: "update_openai_api_key", openai_api_key: string}
+type UpdateAPIKey = {type: "update_api_key", provider: string, key: string}
 type UpdateQuery = {type: "update_query", query: string};
 type ClearAnswer = {type: "clear_answer"};
 type UpdateSources = {type: "update_sources", sources: any};
 type UpdateAnswer = {type: "update_answer", answer: string};
 type ToggleConfig = {type: "toggle_config"};
-export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateOpenAIAPIKey | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig;
+export type Actions = UpdateInitial | UpdateRecs | UpdateModelProvider | UpdateModel | UpdateAPIKey | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig;
 
 function reducer(state:State, action: Actions): State {
     switch (action.type) {
@@ -39,15 +45,22 @@ function reducer(state:State, action: Actions): State {
                 ...state,
                 recs: action.recs
             };
+        case "update_model_provider":
+            return {
+                ...state,
+                model_provider_name: action.model_provider_name
+            };
         case "update_model":
             return {
                 ...state,
                 model_name: action.model_name
             };
-        case "update_openai_api_key":
+        case "update_api_key":
+            let keys = state.api_keys;
+            keys[action.provider as string] = action.key;
             return {
                 ...state,
-                openai_api_key: action.openai_api_key
+                api_keys: keys
             };
         case "update_query":
             return {
@@ -92,7 +105,7 @@ export function Search() {
         state_to_use = JSON.parse(local_search_state);
     }
     else {
-        state_to_use = {initial: true, recs: null, model_name: "gpt-3.5-turbo", openai_api_key: null, query: null, sources: null, answer: null, config_visible: false};
+        state_to_use = {initial: true, recs: null, model_provider_name: "openai", model_name: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false};
     }
 
     const [state, dispatch] = useReducer(reducer, state_to_use);
@@ -118,19 +131,64 @@ export function Search() {
 
                 let res: Response
                 let data = null
-                if (state.model_name === "gpt-3.5-turbo") {
-                    res = await fetch("/api/search/openai/gpt-3.5-turbo", {
-                        method: "POST",
-                        body: JSON.stringify({query: query, sources: serpResults, api_key: state.openai_api_key})
-                    });
-                    data = res.body;
+
+                // provider openai
+                if (state.model_provider_name === "openai") {
+                    let api_key: string;
+                    if (typeof(state.api_keys["openai"] === "undefined")) {
+                        api_key = "";
+                    }
+                    else {
+                        api_key = state.api_keys["openai"];
+                    }
+ 
+                    if (state.model_name === "gpt-3.5-turbo") {
+                       res = await fetch("/api/search/openai/gpt-3.5-turbo", {
+                            method: "POST",
+                            body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
+                        });
+                        data = res.body;
+                    }
+                    else if (state.model_name === "gpt-4") {
+                        res = await fetch("/api/search/openai/gpt-4", {
+                            method: "POST",
+                            body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
+                        });
+                        data = res.body;
+                    }
                 }
-                else if (state.model_name === "gpt-4") {
-                    res = await fetch("/api/search/openai/gpt-4", {
-                        method: "POST",
-                        body: JSON.stringify({query: query, sources: serpResults, api_key: state.openai_api_key})
-                    });
-                    data = res.body;
+
+                // provider openrouter
+                else if (state.model_provider_name === "openrouter") {
+                    let api_key: string;
+                    if (typeof(state.api_keys["openrouter"] === "undefined")) {
+                        api_key = "";
+                    }
+                    else {
+                        api_key = state.api_keys["openrouter"];
+                    }
+                    if (state.model_name === "gpt-3.5-turbo") {
+                        res = await fetch("/api/search/openrouter/gpt-3.5-turbo", {
+                             method: "POST",
+                             body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
+                         });
+                         data = res.body;
+                    }
+                    else if (state.model_name === "gpt-4") {
+                        res = await fetch("/api/search/openrouter/gpt-4", {
+                            method: "POST",
+                            body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
+                        });
+                        data = res.body;
+                    }
+                    else if (state.model_name === "capybara-7b") {
+                        res = await fetch("/api/search/openrouter/capybara-7b", {
+                            method: "POST",
+                            body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
+                        });
+                        data = res.body;
+                    }
+                    
                 }
 
                 if (!data) {

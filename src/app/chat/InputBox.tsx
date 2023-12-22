@@ -47,19 +47,63 @@ export default function InputBox() {
 
                 let res: Response
                 let data = null
-                if (state.model_name === "gpt-3.5-turbo") {
-                    res = await fetch("/api/chat/openai/gpt-3.5-turbo", {
-                        method: "POST",
-                        body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: state.openai_api_key})
-                    });
-                    data = res.body;
+
+                // provider openai
+                if (state.model_provider_name === "openai") {
+                    let api_key: string;
+                    if (typeof(state.api_keys["openai"] === "undefined")) {
+                        api_key = "";
+                    }
+                    else {
+                        api_key = state.api_keys["openai"];
+                    }
+ 
+                    if (state.model_name === "gpt-3.5-turbo") {
+                       res = await fetch("/api/chat/openai/gpt-3.5-turbo", {
+                            method: "POST",
+                            body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: api_key})
+                        });
+                        data = res.body;
+                    }
+                    else if (state.model_name === "gpt-4") {
+                        res = await fetch("/api/chat/openai/gpt-4", {
+                            method: "POST",
+                            body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: api_key})
+                        });
+                        data = res.body;
+                    }
                 }
-                else if (state.model_name === "gpt-4") {
-                    res = await fetch("/api/chat/openai/gpt-4", {
-                        method: "POST",
-                        body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: state.openai_api_key})
-                    });
-                    data = res.body;
+
+                // provider openrouter
+                else if (state.model_provider_name === "openrouter") {
+                    let api_key: string;
+                    if (typeof(state.api_keys["openrouter"] === "undefined")) {
+                        api_key = "";
+                    }
+                    else {
+                        api_key = state.api_keys["openrouter"];
+                    }
+                    if (state.model_name === "gpt-3.5-turbo") {
+                        res = await fetch("/api/chat/openrouter/gpt-3.5-turbo", {
+                             method: "POST",
+                            body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: api_key})
+                        });
+                        data = res.body;
+                    }
+                    else if (state.model_name === "gpt-4") {
+                        res = await fetch("/api/chat/openrouter/gpt-4", {
+                            method: "POST",
+                            body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: api_key})
+                        });
+                        data = res.body;
+                    } 
+                    else if (state.model_name === "capybara-7b") {
+                        res = await fetch("/api/chat/openrouter/capybara-7b", {
+                            method: "POST",
+                            body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: api_key})
+                        });
+                        data = res.body;
+                    }
                 }
 
                 if (!data) {
