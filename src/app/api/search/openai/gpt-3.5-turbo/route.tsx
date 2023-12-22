@@ -5,7 +5,11 @@ import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 
 async function scrapeAndClean(searchResult: any) {
-    const response = await fetch(searchResult.link as string);
+    const signal = AbortSignal.timeout(5000);
+    const response = await fetch(searchResult.link as string, {signal: signal});
+    if (!response.ok) {
+        return {idx: -1, title: "", snippet: ""}
+    }
     const html = await response.text();
     const dom = new JSDOM(html);
     const doc = dom.window.document;
