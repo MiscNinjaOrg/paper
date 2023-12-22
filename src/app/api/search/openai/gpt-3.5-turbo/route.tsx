@@ -6,7 +6,7 @@ import { JSDOM } from "jsdom";
 
 async function scrapeAndClean(searchResult: any) {
     try {
-        const signal = AbortSignal.timeout(2000);
+        const signal = AbortSignal.timeout(3000);
         const response = await fetch(searchResult.link as string, {signal: signal});
         if (!response.ok) {
             return {idx: -1, title: "", snippet: ""}
