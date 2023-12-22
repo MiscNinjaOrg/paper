@@ -5,35 +5,39 @@ import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 
 async function scrapeAndClean(searchResult: any) {
-    const signal = AbortSignal.timeout(5000);
-    const response = await fetch(searchResult.link as string, {signal: signal});
-    if (!response.ok) {
+    try {
+        const signal = AbortSignal.timeout(2000);
+        const response = await fetch(searchResult.link as string, {signal: signal});
+        if (!response.ok) {
+            return {idx: -1, title: "", snippet: ""}
+        }
+        const html = await response.text();
+        const dom = new JSDOM(html);
+        const doc = dom.window.document;
+        const parsed = new Readability(doc).parse();
+        const cleaned = parsed?.textContent.trim()
+        .replace(/(\n){4,}/g, "\n\n\n")
+        .replace(/\n\n/g, " ")
+        .replace(/ {3,}/g, "  ")
+        .replace(/\t/g, "")
+        .replace(/\n+(\s*\n)*/g, "\n") as string;
+
+        if (cleaned === undefined) {
+            return {idx: -1, title: "", snippet: ""}
+        }
+
+        // console.log(searchResult.link);
+        // console.log(cleaned.length);
+        // console.log(parsed?.textContent.slice(0, 500));
+
+        const title = searchResult.title;
+        const snippet = cleaned.slice(0, 200);
+        const idx = searchResult.position;
+
+        return {idx: idx, title: title, snippet: snippet};
+    } catch (e) {
         return {idx: -1, title: "", snippet: ""}
     }
-    const html = await response.text();
-    const dom = new JSDOM(html);
-    const doc = dom.window.document;
-    const parsed = new Readability(doc).parse();
-    const cleaned = parsed?.textContent.trim()
-    .replace(/(\n){4,}/g, "\n\n\n")
-    .replace(/\n\n/g, " ")
-    .replace(/ {3,}/g, "  ")
-    .replace(/\t/g, "")
-    .replace(/\n+(\s*\n)*/g, "\n") as string;
-
-    if (cleaned === undefined) {
-        return {idx: -1, title: "", snippet: ""}
-    }
-
-    // console.log(searchResult.link);
-    // console.log(cleaned.length);
-    // console.log(parsed?.textContent.slice(0, 500));
-
-    const title = searchResult.title;
-    const snippet = cleaned.slice(0, 200);
-    const idx = searchResult.position;
-
-    return {idx: idx, title: title, snippet: snippet};
 }
 
 function constructPrompt(query:string, snippets: {idx: number, title: string, snippet: string}[]) {
