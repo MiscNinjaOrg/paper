@@ -23,9 +23,9 @@ export function SidebarLoggedIn() {
         <div className="flex h-screen w-[100px] flex-col justify-between items-center bg-blue-200">
             <div className="flex-auto justify-center items-center bg-green-600 w-full">
                 <AppIcon />
-                <SearchButton onClick={() => {dispatch({type: "switch_app", target_app: "search"})}}/>
-                <ChatButton onClick={() => {dispatch({type: "switch_app", target_app: "chat"})}}/>
-                <CodeButton onClick={() => {dispatch({type: "switch_app", target_app: "code"})}}/>
+                <SearchButton onClick={() => {dispatch({type: "switch_app", app: "search"})}}/>
+                <ChatButton onClick={() => {dispatch({type: "switch_app", app: "chat"})}}/>
+                <CodeButton onClick={() => {dispatch({type: "switch_app", app: "code"})}}/>
             </div>
             <div>
                 <img className='rounded-full' src={user.image as string} alt='user'/>
@@ -46,9 +46,9 @@ export function SidebarNoAuth() {
         <div className="flex h-screen w-[100px] flex-col justify-between items-center bg-blue-200">
             <div className="flex-auto justify-center items-center bg-green-600 w-full">
                 <AppIcon />
-                <SearchButton onClick={() => {dispatch({type: "switch_app", target_app: "search"})}}/>
-                <ChatButton onClick={() => {dispatch({type: "switch_app", target_app: "chat"})}}/>
-                <CodeButton onClick={() => {dispatch({type: "switch_app", target_app: "code"})}}/>
+                <SearchButton onClick={() => {dispatch({type: "switch_app", app: "search"})}}/>
+                <ChatButton onClick={() => {dispatch({type: "switch_app", app: "chat"})}}/>
+                <CodeButton onClick={() => {dispatch({type: "switch_app", app: "code"})}}/>
             </div>
         </div>
     )

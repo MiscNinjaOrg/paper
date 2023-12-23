@@ -41,6 +41,9 @@ function SearchAnswer({answer}: {answer: string | null}) {
 }
 
 function SearchSources({sources}: {sources: any}) {
+
+    const dispatch = useContext(DispatchContext);
+
     return (
          <div className="flex flex-col w-4/6 mt-4 mb-8 p-6 bg-slate-400 rounded-xl font-mono">
             {sources.map((source: any, i: number) => (
@@ -58,6 +61,9 @@ function SearchSources({sources}: {sources: any}) {
                 <div>
                     {source.snippet}
                 </div>
+                <button onClick={() => {dispatch({type: "create_browse_page", search_result: source})}} className="min-w-[400px] flex justify-center items-center bg-red-100 mt-8 py-2 rounded-lg">
+                    Open with MiscNinja
+                </button>
             </div>
             ))}
         </div>

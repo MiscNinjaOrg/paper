@@ -6,7 +6,7 @@ import { Dispatch, useEffect, useReducer } from "react";
 import { StateContext, DispatchContext } from "./Context";
 import { ConfigBar } from "./ConfigBar";
 
-interface Dictionary<T> {
+export interface Dictionary<T> {
     [Key: string]: T;
 }
 

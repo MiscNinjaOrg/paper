@@ -9,12 +9,12 @@ import { Code } from "../code/Code";
 
 // this state-action reducer is meant to handle switching between the apps in the sidebar - search, chat, code, etc.
 export interface State {
-    current_app: string;
+    app: string;
 }
   
 export interface Actions {
     type: string;
-    target_app: string;
+    app: string;
 }
 
 function reducer (state: State, action: Actions): State {
@@ -22,7 +22,7 @@ function reducer (state: State, action: Actions): State {
         case "switch_app":
             return {
                 ...state,
-                current_app: action.target_app
+                app: action.app
             };
         default:
         return state;
@@ -32,7 +32,7 @@ function reducer (state: State, action: Actions): State {
 // for when deploying with next auth
 export function HomeLoggedIn({userEmail, userImage, userName}: {userEmail: string | null | undefined, userImage: string | null | undefined, userName: string | null | undefined}) {
     const [state, dispatch] = useReducer(reducer, {
-        current_app: "search"
+        app: "search"
     });
 
     const user = {
@@ -56,7 +56,7 @@ export function HomeLoggedIn({userEmail, userImage, userName}: {userEmail: strin
                 <UserContext.Provider value={user}>
                     <main className='flex'>
                         <SidebarLoggedIn />
-                        { getCurrentApp(state.current_app) }
+                        { getCurrentApp(state.app) }
                     </main>
                 </UserContext.Provider>
             </DispatchContext.Provider>
@@ -68,7 +68,7 @@ export function HomeLoggedIn({userEmail, userImage, userName}: {userEmail: strin
 // for when deploying locally with no auth required
 export function HomeNoAuth() {
     const [state, dispatch] = useReducer(reducer, {
-        current_app: "search"
+        app: "search"
     });
 
     const getCurrentApp = (app: string) => {
@@ -85,7 +85,7 @@ export function HomeNoAuth() {
             <DispatchContext.Provider value={dispatch}>
                     <main className='flex'>
                         <SidebarNoAuth />
-                        { getCurrentApp(state.current_app) }
+                        { getCurrentApp(state.app) }
                     </main>
             </DispatchContext.Provider>
         </StateContext.Provider>

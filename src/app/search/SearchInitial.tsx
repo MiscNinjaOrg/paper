@@ -1,6 +1,6 @@
 import { TextareaAutosize } from "@mui/base";
 import { RefObject, useRef, KeyboardEvent, useContext } from "react";
-import { StateContext } from "./Context";
+import { DispatchContext, StateContext } from "./Context";
 
 export function SearchBox({handleSearch}: {handleSearch: (ref: RefObject<HTMLTextAreaElement>) => Promise<void>}) {
 
@@ -30,6 +30,7 @@ export function SearchBox({handleSearch}: {handleSearch: (ref: RefObject<HTMLTex
 export function SearchInitial({handleSearch, getRecs}: {handleSearch: (ref: RefObject<HTMLTextAreaElement>) => Promise<void>, getRecs: () => Promise<void>}) {
 
     const state = useContext(StateContext);
+    const dispatch = useContext(DispatchContext)
     if (state.recs === null) {
         getRecs();
     }
@@ -45,14 +46,17 @@ export function SearchInitial({handleSearch, getRecs}: {handleSearch: (ref: RefO
             {state.recs?
             <div className="flex flex-wrap justify-center py-2 bg-yellow-200 h-full w-1/2 min-w-[400px] mt-20 mb-20 font-mono overflow-y-scroll no-scrollbar rounded-xl text-black">
                 {state.recs.map((rec: any, i: number) => (
-                    <div key={i} className="bg-green-100 my-2 mx-2 p-4 rounded-lg w-[45%]">
-                    <a href={rec.link} className="underline bg-blue-100 bg-opacity-0 hover:bg-opacity-100">
-                        {rec.title}
-                    </a>
-                    <div>
-                        {rec.snippet}
+                    <div key={i} className="flex flex-col bg-green-100 my-2 mx-2 p-4 rounded-lg w-[45%]">
+                        <a href={rec.link} className="underline bg-blue-100 bg-opacity-0 hover:bg-opacity-100">
+                            {rec.title}
+                        </a>
+                        <div className="grow">
+                            {rec.snippet}
+                        </div>
+                        <button onClick={() => {dispatch({type: "create_browse_page", search_result: rec})}} className="flex justify-center items-center bg-red-100 mt-8 py-2 rounded-lg">
+                            Open with MiscNinja
+                        </button>
                     </div>
-                </div>
                 ))}
             </div>
             :

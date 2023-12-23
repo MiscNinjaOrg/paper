@@ -1,9 +1,37 @@
-import { useContext } from "react"
+import { Dispatch, ReactNode, useContext } from "react"
 import { DispatchContext, StateContext } from "./Context"
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { TextField } from "@mui/material";
+import { Actions, Dictionary } from "./Chat";
+
+export function APIKeyInput({model_provider_name, label, api_keys, dispatch}: {model_provider_name: string, label:string, api_keys: Dictionary<string>, dispatch: Dispatch<Actions>}) {
+    return (
+        <div className="flex flex-col justify-center items-center w-3/4 bg-slate-400 py-4 my-2 rounded-lg">
+            <InputLabel className="w-full h-full text-center mb-2">{label}</InputLabel>
+            <TextField className="w-5/6" label="API Key" value={api_keys[model_provider_name] ? api_keys[model_provider_name]:""} variant="outlined" onChange={(e) => {dispatch({type: "update_api_key", provider: model_provider_name, key: e.target.value})}}/>
+        </div>
+    )
+}
+
+export function SelectAndDispatch({value, label, onChange, items}: {value: string, label: string, onChange: (event: SelectChangeEvent<string>, child: ReactNode) => void, items: string[][]}) {
+    return (
+        <div className="flex flex-col justify-center items-center w-3/4 bg-slate-400 py-4 my-2 rounded-lg">
+            <InputLabel className="w-full h-full text-center mb-2">Model Provider</InputLabel>
+            <Select
+            value={value}
+            label={label}
+            className="w-5/6"
+            onChange={onChange}
+            >
+                {items.map((item: string[], i: number) => (
+                    <MenuItem key={i} value={item[0]}>{item[1]}</MenuItem>
+                ))}
+            </Select>
+        </div>
+    )
+}
 
 export function ConfigBar() {
      const state = useContext(StateContext);
@@ -17,36 +45,23 @@ export function ConfigBar() {
             <div className={`fixed w-80 h-full items-center justify-start pt-24 flex flex-col bg-red-300 transition-all ${state.config_visible ? "right-0" : "-right-80"}`}>
                 
                 {/* select model provider */}
-                <div className="flex flex-col justify-center items-center w-3/4 bg-slate-400 py-4 my-2 rounded-lg">
-                    <InputLabel className="w-full h-full text-center mb-2">Model Provider</InputLabel>
-                    <Select
-                    value={state.model_provider_name}
-                    label="Model Provider"
-                    className="w-5/6"
-                    onChange={(e) => {dispatch({type: "update_model_provider", model_provider_name: e.target.value})}}
-                    >
-                        <MenuItem value={"openai"}>OpenAI</MenuItem>
-                        <MenuItem value={"openrouter"}>OpenRouter</MenuItem>
-                        <MenuItem value={"miscninja"}>MiscNinja</MenuItem>
-                    </Select>
-                </div>
+                <SelectAndDispatch 
+                value={state.model_provider_name} 
+                label="Model Provider" 
+                onChange={(e) => {dispatch({type: "update_model_provider", model_provider_name: e.target.value})}}
+                items={[["openai", "OpenAI"], ["openrouter", "OpenRouter"], ["miscninja", "MiscNinja"]]}
+                />
 
                 {/* api key if needed */}
                 {
                     state.model_provider_name === "openai" ? 
-                    <div className="flex flex-col justify-center items-center w-3/4 bg-slate-400 py-4 my-2 rounded-lg">
-                        <InputLabel className="w-full h-full text-center mb-2">OpenAI API Key</InputLabel>
-                        <TextField className="w-5/6" label="API Key" value={state.api_keys["openai"] ? state.api_keys["openai"]:""} variant="outlined" onChange={(e) => {dispatch({type: "update_api_key", provider: "openai", key: e.target.value})}}/>
-                    </div>
+                    <APIKeyInput model_provider_name="openai" label="OpenAI API Key" api_keys={state.api_keys} dispatch={dispatch} />
                     :
                     <></>
                 }
                 {
                     state.model_provider_name === "openrouter" ? 
-                    <div className="flex flex-col justify-center items-center w-3/4 bg-slate-400 py-4 my-2 rounded-lg">
-                        <InputLabel className="w-full h-full text-center mb-2">OpenRouter API Key</InputLabel>
-                        <TextField className="w-5/6" label="API Key" value={state.api_keys["openrouter"] ? state.api_keys["openrouter"]:""} variant="outlined" onChange={(e) => {dispatch({type: "update_api_key", provider: "openrouter", key: e.target.value})}}/>
-                    </div>
+                    <APIKeyInput model_provider_name="openrouter" label="OpenRouter API Key" api_keys={state.api_keys} dispatch={dispatch} />
                     :
                     <></>
                 }
@@ -54,36 +69,23 @@ export function ConfigBar() {
                 {/* model name */}
                 {
                     state.model_provider_name === "openai" ?
-                    <div className="flex flex-col justify-center items-center w-3/4 bg-slate-400 py-4 my-2 rounded-lg">
-                        <InputLabel className="w-full h-full text-center mb-2">Model</InputLabel>
-                        <Select
-                        value={state.model_name}
-                        label="Model"
-                        className="w-5/6"
-                        onChange={(e) => {dispatch({type: "update_model", model_name: e.target.value})}}
-                        >
-                            <MenuItem value={"gpt-3.5-turbo"}>OpenAI GPT-3.5</MenuItem>
-                            <MenuItem value={"gpt-4"}>OpenAI GPT-4</MenuItem>
-                        </Select>
-                    </div>
+                    <SelectAndDispatch 
+                    value={state.model_name} 
+                    label="Model" 
+                    onChange={(e) => {dispatch({type: "update_model", model_name: e.target.value})}}
+                    items={[["gpt-3.5-turbo", "OpenAI GPT-3.5"], ["gpt-4", "OpenAI GPT-4"]]}
+                    />
                     :
                     <></>
                 }
                 {
                     state.model_provider_name === "openrouter" ?
-                    <div className="flex flex-col justify-center items-center w-3/4 bg-slate-400 py-4 my-2 rounded-lg">
-                        <InputLabel className="w-full h-full text-center mb-2">Model</InputLabel>
-                        <Select
-                        value={state.model_name}
-                        label="Model"
-                        className="w-5/6"
-                        onChange={(e) => {dispatch({type: "update_model", model_name: e.target.value})}}
-                        >
-                            <MenuItem value={"gpt-3.5-turbo"}>OpenAI GPT-3.5</MenuItem>
-                            <MenuItem value={"gpt-4"}>OpenAI GPT-4</MenuItem>
-                            <MenuItem value={"capybara-7b"}>Capybara 7B</MenuItem>
-                        </Select>
-                    </div>
+                    <SelectAndDispatch 
+                    value={state.model_name} 
+                    label="Model" 
+                    onChange={(e) => {dispatch({type: "update_model", model_name: e.target.value})}}
+                    items={[["gpt-3.5-turbo", "OpenAI GPT-3.5"], ["gpt-4", "OpenAI GPT-4"], ["capybara-7b", "Capybara 7B"]]}
+                    />
                     :
                     <></>
                 }

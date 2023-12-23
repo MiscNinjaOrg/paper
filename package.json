@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.11.0",
     "@mozilla/readability": "^0.4.4",
     "@mui/base": "^5.0.0-beta.27",
+    "@mui/lab": "^5.0.0-alpha.157",
     "@mui/material": "^5.15.1",
     "@types/bcrypt": "^5.0.2",
     "@types/jsdom": "^21.1.6",
@@ -28,6 +29,7 @@
     "react-markdown": "^9.0.1",
     "react-scroll-to-bottom": "^4.2.0",
     "react-spinners": "^0.13.8",
+    "react-tabs": "^6.0.2",
     "react-textarea-autosize": "^8.5.3",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.0"

@@ -1,3 +1,11 @@
+export interface SearchResult {
+    position: number;
+    link: string;
+    title: string;
+    snippet: string;
+    sitelinks: [];
+}
+
 export async function POST(req: Request) {
     const body = await req.json();
     const query = body.query;
@@ -21,5 +29,12 @@ export async function POST(req: Request) {
     const searchJSON = await searchResponse.json();
     const searchResults = searchJSON.news;
 
-    return Response.json(searchResults);
+    let finalSearchResults: SearchResult[] = [];
+    for (let i = 0; i < searchResults.length; i++) {
+        const searchResult = searchResults[i];
+        const finalSearchResult = {position: searchResult.position, link: searchResult.link, title: searchResult.title, snippet: searchResult.snippet} as SearchResult;
+        finalSearchResults = [...finalSearchResults, finalSearchResult];
+    }
+
+    return Response.json(finalSearchResults);
 }
