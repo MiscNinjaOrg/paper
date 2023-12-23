@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { Message } from "@/app/chat/Chat";
+import { ModelNameMapping } from "./utils";
 
 const messageMap = (message: Message) => {
     let role: string;
@@ -15,7 +16,8 @@ const messageMap = (message: Message) => {
     return {role: role, content: message.text}
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request, { params }: { params: { model_name: string } }) {
+    const model_name = params.model_name;
     const body = await req.json();
     const messages = body.messages;
     const prompt = body.prompt;
@@ -33,7 +35,7 @@ export async function POST(req: Request) {
     console.log([..._messages, ..._prompt]);
 
     const response = await openai.chat.completions.create({
-        model: "openai/gpt-3.5-turbo",
+        model: ModelNameMapping[model_name],
         stream: true,
         messages: [..._messages, ..._prompt]
     });

@@ -15,17 +15,18 @@ const messageMap = (message: Message) => {
     return {role: role, content: message.text}
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request, { params }: { params: { model_name: string } }) {
+    const model_name = params.model_name;
     const body = await req.json();
     const messages = body.messages;
     const prompt = body.prompt;
 
     let openai: OpenAI;
     if (body.api_key) {
-        openai = new OpenAI({baseURL: "https://openrouter.ai/api/v1", apiKey: body.api_key});
+        openai = new OpenAI({apiKey: body.api_key});
     }
     else {
-        openai = new OpenAI({baseURL: "https://openrouter.ai/api/v1", apiKey: process.env.OPENROUTER_API_KEY});
+        openai = new OpenAI();
     }
 
     const _messages = messages.map(messageMap);
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     console.log([..._messages, ..._prompt]);
 
     const response = await openai.chat.completions.create({
-        model: "openai/gpt-4",
+        model: model_name,
         stream: true,
         messages: [..._messages, ..._prompt]
     });
