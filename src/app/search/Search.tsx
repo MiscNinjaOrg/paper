@@ -215,8 +215,42 @@ export function Search() {
         dispatch({type: "update_recs", recs: recsResults});
     }
 
-    const getSummary = async (link: string) => {
+    const getSummary = async (index: number, link: string) => {
 
+        const browse_page = state.browse_pages[index];
+        dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: ""} as BrowsePageState});
+
+        let res: Response
+        let data = null
+
+        let api_key: string;
+        if (typeof(state.api_keys[state.model_provider_name] === "undefined")) {
+            api_key = "";
+        }
+        else {
+            api_key = state.api_keys[state.model_provider_name];
+        }
+        res = await fetch(`/api/summary/${state.model_provider_name}/${state.model_name}`, {
+            method: "POST",
+            body: JSON.stringify({link: link})
+        });
+        data = res.body;
+
+        if (!data) {
+            return;
+        }
+
+        const reader = data.getReader();
+        const decoder = new TextDecoder();
+        let done = false;
+
+        while (!done) {
+            const {value, done: doneReading} = await reader.read();
+            done  = doneReading;
+            const chunkValue = decoder.decode(value);
+            const browse_page = state.browse_pages[index];
+            dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: browse_page.summary + chunkValue} as BrowsePageState});
+        }
     }
 
     return (
@@ -251,7 +285,7 @@ export function Search() {
                             state.browse_pages.map((page: BrowsePageState, i: number) => (
                                 <TabPanel key={i}>
                                     <div className="h-[calc(100vh_-_40px)]">
-                                        <Browse browse_page_state={page} getSummary={getSummary}/>
+                                        <Browse index={i} browse_page_state={page} getSummary={getSummary}/>
                                     </div>
                                 </TabPanel>
                             ))
