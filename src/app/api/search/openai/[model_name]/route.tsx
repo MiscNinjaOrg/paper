@@ -40,17 +40,18 @@ async function scrapeAndClean(searchResult: any) {
     }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: Request, { params }: { params: { model_name: string } }) {
+    const model_name = params.model_name;
     const body = await req.json();
     const query = body.query;
     const sources = body.sources;
 
     let openai: OpenAI;
     if (body.api_key) {
-        openai = new OpenAI({baseURL: "https://openrouter.ai/api/v1", apiKey: body.api_key});
+        openai = new OpenAI({apiKey: body.api_key});
     }
     else {
-        openai = new OpenAI({baseURL: "https://openrouter.ai/api/v1", apiKey: process.env.OPENROUTER_API_KEY});
+        openai = new OpenAI();
     }
 
     const snippets = (await Promise.all(sources.map(scrapeAndClean))).filter((snippet: any) => snippet.idx != -1);
@@ -59,7 +60,7 @@ export async function POST(req: Request) {
 
     console.log(prompt)
     const response = await openai.chat.completions.create({
-        model: "openai/gpt-4",
+        model: model_name,
         stream: true,
         messages: [{role: "user", content: prompt}]
     });

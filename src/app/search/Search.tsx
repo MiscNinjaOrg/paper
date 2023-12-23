@@ -175,63 +175,18 @@ export function Search() {
                 let res: Response
                 let data = null
 
-                // provider openai
-                if (state.model_provider_name === "openai") {
-                    let api_key: string;
-                    if (typeof(state.api_keys["openai"] === "undefined")) {
-                        api_key = "";
-                    }
-                    else {
-                        api_key = state.api_keys["openai"];
-                    }
- 
-                    if (state.model_name === "gpt-3.5-turbo") {
-                       res = await fetch("/api/search/openai/gpt-3.5-turbo", {
-                            method: "POST",
-                            body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
-                        });
-                        data = res.body;
-                    }
-                    else if (state.model_name === "gpt-4") {
-                        res = await fetch("/api/search/openai/gpt-4", {
-                            method: "POST",
-                            body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
-                        });
-                        data = res.body;
-                    }
+                let api_key: string;
+                if (typeof(state.api_keys[state.model_provider_name] === "undefined")) {
+                    api_key = "";
                 }
-
-                // provider openrouter
-                else if (state.model_provider_name === "openrouter") {
-                    let api_key: string;
-                    if (typeof(state.api_keys["openrouter"] === "undefined")) {
-                        api_key = "";
-                    }
-                    else {
-                        api_key = state.api_keys["openrouter"];
-                    }
-                    if (state.model_name === "gpt-3.5-turbo") {
-                        res = await fetch("/api/search/openrouter/gpt-3.5-turbo", {
-                             method: "POST",
-                             body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
-                         });
-                         data = res.body;
-                    }
-                    else if (state.model_name === "gpt-4") {
-                        res = await fetch("/api/search/openrouter/gpt-4", {
-                            method: "POST",
-                            body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
-                        });
-                        data = res.body;
-                    }
-                    else if (state.model_name === "capybara-7b") {
-                        res = await fetch("/api/search/openrouter/capybara-7b", {
-                            method: "POST",
-                            body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
-                        });
-                        data = res.body;
-                    }
+                else {
+                    api_key = state.api_keys[state.model_provider_name];
                 }
+                res = await fetch(`/api/search/${state.model_provider_name}/${state.model_name}`, {
+                    method: "POST",
+                    body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
+                });
+                data = res.body;
 
                 if (!data) {
                     return;
@@ -261,7 +216,7 @@ export function Search() {
     }
 
     const getSummary = async (link: string) => {
-        
+
     }
 
     return (

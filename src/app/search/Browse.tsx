@@ -22,8 +22,8 @@ export function Browse({browse_page_state, getSummary}: {browse_page_state: Brow
             </object>
         </div>
         <div className="flex flex-col justify-center items-center w-1/2 h-full bg-green-100">
-            <div className="flex justify-center items-start h-full w-full bg-slate-200">
-                <div className="w-[95%] max-h-[95%] my-6 p-6 bg-red-100 rounded-xl font-mono">
+            <div className="flex justify-center items-start h-full max-h-[50%] w-full bg-slate-200">
+                <div className="w-[95%] max-h-[95%] my-3 p-6 bg-red-100 rounded-xl font-mono overflow-y-auto overflow-x-clip">
                     <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                     {browse_page_state.summary}
                     </ReactMarkdown>
