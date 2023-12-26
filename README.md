@@ -1,3 +1,7 @@
+# MiscNinja Paper
+
+Paper is the front-facing UI component of the MiscNinja project. It is intended to be a semantic layer over the internet; i.e. it uses AI to smoothen a user's interaction with the internet - both the searching and browsing experiences.
+
 ## Run via Docker
 
 Detailed instructions on building coming soon.
