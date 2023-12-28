@@ -14,7 +14,23 @@ Not sure how to tackle this yet.
 
 A demo may or may not be up [here](http://app.misc.ninja/).
 
-## Run via Docker
+## Local Dev Setup
+
+To set up Paper for local development -
+
+```
+./setup.sh --local
+```
+
+## Docker Setup
+
+To run Paper locally using Docker build -
+
+```
+./setup.sh --docker
+```
+
+## Run with Remote Docker Image
 
 Detailed instructions on building coming soon.
 
