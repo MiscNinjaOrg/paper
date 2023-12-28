@@ -14,22 +14,6 @@ Not sure how to tackle this yet.
 
 A demo may or may not be up [here](http://app.misc.ninja/).
 
-## Local Dev Setup
-
-To set up Paper for local development -
-
-```
-./setup.sh --local
-```
-
-## Docker Setup
-
-To run Paper locally using Docker build -
-
-```
-./setup.sh --docker
-```
-
 ## Run with Remote Docker Image
 
 Detailed instructions on building coming soon.
@@ -44,3 +28,59 @@ docker run -d -p 80:80 lordspline/miscninja-paper
 Then go to `http://localhost/` in your browser.
 
 Remember to provide your OpenAI API Key.
+
+## Local Dev Setup
+
+To set up Paper for local development -
+
+```
+./setup.sh --local
+```
+
+Then go to `http://localhost/` in your browser.
+
+## Docker Setup
+
+To run Paper locally using Docker build -
+
+```
+./setup.sh --docker
+```
+
+Then go to `http://localhost/` in your browser.
+
+## Manual Setup
+
+- Clone Repo
+  
+```
+git clone https://github.com/MiscNinjaOrg/paper.git
+```
+
+- Install Dependencies
+
+```
+cd paper
+npm install
+```
+
+- Create a .env file
+
+```
+# Deployment Environment:
+NODE_ENV=development
+
+# Next Auth config:
+# Generate a secret with `openssl rand -base64 32`
+NEXTAUTH_SECRET=changeme
+NEXTAUTH_URL=http://localhost:3000
+DATABASE_URL=file:./db.sqlite
+```
+
+- Run the app
+
+```
+npm run dev
+```
+
+Then go to `http://localhost/` in your browser.
