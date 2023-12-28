@@ -9,14 +9,9 @@ export function Browse({index, browse_page_state, getSummary}: {index: number, b
         <div className="flex w-full h-full bg-blue-100">
         
         <div className="flex justify-center items-center w-1/2 h-full bg-red-200">
-            {/* <iframe id="iFrameExample"
-            className="w-full h-full"
-            title="iFrame Example"
-            src="https://en.wikipedia.org/wiki/Harris_corner_detector">
-            </iframe> */}
-            <object data={browse_page_state.search_result.link} className="w-[95%] h-[95%] rounded-md">
+            {/* <object data={browse_page_state.search_result.link} className="w-[95%] h-[95%] rounded-md">
             <embed src={browse_page_state.search_result.link}></embed>
-            </object>
+            </object> */}
         </div>
         <div className="flex flex-col justify-center items-center w-1/2 h-full bg-green-100">
             <div className="h-[100px] w-full flex justify-center items-center">

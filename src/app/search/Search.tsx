@@ -6,7 +6,6 @@ import { ConfigBar } from "./ConfigBar";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import { Browse } from "./Browse";
-import { url } from "inspector";
 import { SearchResult } from "../api/search/serp/route";
 
 export interface Dictionary<T> {

@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 import { constructPrompt } from "../../utils";
+import { writeFile } from "fs";
 
 async function scrapeAndClean(link: string) {
     try {
@@ -25,6 +26,8 @@ async function scrapeAndClean(link: string) {
         if (cleaned === undefined) {
             ""
         }
+
+        writeFile("temp.txt", cleaned, (e) => {});
 
         const article = cleaned.slice(0, 1000);
 
