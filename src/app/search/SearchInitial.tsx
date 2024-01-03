@@ -47,15 +47,12 @@ export function SearchInitial({handleSearch, getRecs}: {handleSearch: (ref: RefO
             <div className="flex flex-wrap justify-center py-2 bg-yellow-200 h-full w-1/2 min-w-[400px] mt-20 mb-20 font-mono overflow-y-scroll no-scrollbar rounded-xl text-black">
                 {state.recs.map((rec: any, i: number) => (
                     <div key={i} className="flex flex-col bg-green-100 my-2 mx-2 p-4 rounded-lg w-[45%]">
-                        <a href={rec.link} className="underline bg-blue-100 bg-opacity-0 hover:bg-opacity-100">
+                        <a href={rec.link} target="_blank" rel="noopener noreferrer" className="underline bg-blue-100 bg-opacity-0 hover:bg-opacity-100">
                             {rec.title}
                         </a>
                         <div className="grow">
                             {rec.snippet}
                         </div>
-                        <button onClick={() => {dispatch({type: "create_browse_page", search_result: rec})}} className="flex justify-center items-center bg-red-100 mt-8 py-2 rounded-lg">
-                            Open with MiscNinja
-                        </button>
                     </div>
                 ))}
             </div>

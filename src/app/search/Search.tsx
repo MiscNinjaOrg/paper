@@ -16,41 +16,42 @@ export interface Dictionary<T> {
     [Key: string]: T;
 }
 
-export interface BrowsePageState {
-    search_result: SearchResult;
-    summary: string | null;
-}
+// export interface BrowsePageState {
+//     search_result: SearchResult;
+//     summary: string | null;
+// }
 
 // this state-action reducer is supposed to handle the current state of the entire search app - including the current query (and whether or not we are on the initial screen), the current search results (both the sources and the answer being streamed)
 export interface State {
     initial: boolean;
     recs: any | null;
-    model_provider_name: string;
+    // model_provider_name: string;
     model_name: string;
-    api_keys: Dictionary<string>;
+    // api_keys: Dictionary<string>;
     query: string | null;
     sources: any | null;
     answer: string | null;
     config_visible: boolean;
-    tab: string;
-    browse_pages: BrowsePageState[];
+    // tab: string;
+    // browse_pages: BrowsePageState[];
 }
 
 type UpdateInitial = {type: "update_initial"};
 type UpdateRecs = {type: "update_recs", recs: any};
-type UpdateModelProvider = {type: "update_model_provider", model_provider_name: string};
+// type UpdateModelProvider = {type: "update_model_provider", model_provider_name: string};
 type UpdateModel = {type: "update_model", model_name: string};
-type UpdateAPIKey = {type: "update_api_key", provider: string, key: string}
+// type UpdateAPIKey = {type: "update_api_key", provider: string, key: string}
 type UpdateQuery = {type: "update_query", query: string};
 type ClearAnswer = {type: "clear_answer"};
 type UpdateSources = {type: "update_sources", sources: any};
 type UpdateAnswer = {type: "update_answer", answer: string};
 type ToggleConfig = {type: "toggle_config"};
-type UpdateTab = {type: "update_tab", tab: string};
-type CreateBrowsePage = {type: "create_browse_page", search_result: SearchResult};
-type DeleteBrowsePage = {type: "delete_browse_page", index: number};
-type UpdateBrowsePages = {type: "update_browse_pages", index: number, browse_page: BrowsePageState}
-export type Actions = UpdateInitial | UpdateRecs | UpdateModelProvider | UpdateModel | UpdateAPIKey | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig | UpdateTab | CreateBrowsePage | DeleteBrowsePage | UpdateBrowsePages;
+// type UpdateTab = {type: "update_tab", tab: string};
+// type CreateBrowsePage = {type: "create_browse_page", search_result: SearchResult};
+// type DeleteBrowsePage = {type: "delete_browse_page", index: number};
+// type UpdateBrowsePages = {type: "update_browse_pages", index: number, browse_page: BrowsePageState}
+// export type Actions = UpdateInitial | UpdateRecs | UpdateModelProvider | UpdateModel | UpdateAPIKey | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig | UpdateTab | CreateBrowsePage | DeleteBrowsePage | UpdateBrowsePages;
+export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig;
 
 function reducer(state:State, action: Actions): State {
     switch (action.type) {
@@ -64,23 +65,23 @@ function reducer(state:State, action: Actions): State {
                 ...state,
                 recs: action.recs
             };
-        case "update_model_provider":
-            return {
-                ...state,
-                model_provider_name: action.model_provider_name
-            };
+        // case "update_model_provider":
+        //     return {
+        //         ...state,
+        //         model_provider_name: action.model_provider_name
+        //     };
         case "update_model":
             return {
                 ...state,
                 model_name: action.model_name
             };
-        case "update_api_key":
-            let keys = state.api_keys;
-            keys[action.provider as string] = action.key;
-            return {
-                ...state,
-                api_keys: keys
-            };
+        // case "update_api_key":
+        //     let keys = state.api_keys;
+        //     keys[action.provider as string] = action.key;
+        //     return {
+        //         ...state,
+        //         api_keys: keys
+        //     };
         case "update_query":
             return {
                 ...state,
@@ -111,32 +112,32 @@ function reducer(state:State, action: Actions): State {
                 ...state,
                 config_visible: !state.config_visible
             };
-        case "update_tab":
-            return {
-                ...state,
-                tab: action.tab
-            };
-        case "create_browse_page":
-            return {
-                ...state,
-                browse_pages: [...state.browse_pages, {search_result: action.search_result, summary: null} as BrowsePageState],
-                tab: String(state.browse_pages.length + 1)
-            }
-        case "delete_browse_page":
-            const pagesCopy = [...state.browse_pages];
-            const removed = pagesCopy.splice(action.index, 1);
-            return {
-                ...state,
-                browse_pages: pagesCopy,
-                tab: String(Math.min(Number(state.tab), state.browse_pages.length - 1))
-            };
-        case "update_browse_pages":
-            let browse_pages = state.browse_pages;
-            browse_pages[action.index] = action.browse_page;
-            return {
-                ...state,
-                browse_pages: browse_pages,
-            };
+        // case "update_tab":
+        //     return {
+        //         ...state,
+        //         tab: action.tab
+        //     };
+        // case "create_browse_page":
+        //     return {
+        //         ...state,
+        //         browse_pages: [...state.browse_pages, {search_result: action.search_result, summary: null} as BrowsePageState],
+        //         tab: String(state.browse_pages.length + 1)
+        //     }
+        // case "delete_browse_page":
+        //     const pagesCopy = [...state.browse_pages];
+        //     const removed = pagesCopy.splice(action.index, 1);
+        //     return {
+        //         ...state,
+        //         browse_pages: pagesCopy,
+        //         tab: String(Math.min(Number(state.tab), state.browse_pages.length - 1))
+        //     };
+        // case "update_browse_pages":
+        //     let browse_pages = state.browse_pages;
+        //     browse_pages[action.index] = action.browse_page;
+        //     return {
+        //         ...state,
+        //         browse_pages: browse_pages,
+        //     };
         default:
             return state;
     }
@@ -151,7 +152,8 @@ export function Search() {
         state_to_use = JSON.parse(local_search_state);
     }
     else {
-        state_to_use = {initial: true, recs: null, model_provider_name: "openai", model_name: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false, tab: "0", browse_pages: []};
+        // state_to_use = {initial: true, recs: null, model_provider_name: "openai", model_name: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false, tab: "0", browse_pages: []};
+        state_to_use = {initial: true, recs: null, model_name: "gpt-3.5-turbo", query: null, sources: null, answer: null, config_visible: false};
     }
 
     const [state, dispatch] = useReducer(reducer, state_to_use);
@@ -209,96 +211,62 @@ export function Search() {
         }
     }
 
+    // const getRecs = async () => {
+    //     const recsResponse = await fetch("/api/search/recs", {
+    //         method: "POST",
+    //         body: JSON.stringify({query: "news"})
+    //     });
+    //     const recsResults = await recsResponse.json();
+    //     dispatch({type: "update_recs", recs: recsResults});
+    // }
+
+    // const getSummary = async (index: number, link: string) => {
+    //     console.log("summmmm")
+
+    //     const browse_page = state.browse_pages[index];
+    //     dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: ""} as BrowsePageState});
+
+    //     let res: Response
+    //     let data = null
+
+    //     let api_key: string;
+    //     if (typeof(state.api_keys[state.model_provider_name] === "undefined")) {
+    //         api_key = "";
+    //     }
+    //     else {
+    //         api_key = state.api_keys[state.model_provider_name];
+    //     }
+    //     res = await fetch(`/api/summary/${state.model_provider_name}/${state.model_name}`, {
+    //         method: "POST",
+    //         body: JSON.stringify({link: link})
+    //     });
+    //     data = res.body;
+
+    //     if (!data) {
+    //         return;
+    //     }
+
+    //     const reader = data.getReader();
+    //     const decoder = new TextDecoder();
+    //     let done = false;
+
+    //     while (!done) {
+    //         const {value, done: doneReading} = await reader.read();
+    //         done  = doneReading;
+    //         const chunkValue = decoder.decode(value);
+    //         const browse_page = state.browse_pages[index];
+    //         dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: browse_page.summary + chunkValue} as BrowsePageState});
+    //     }
+    // }
+
+    // write with sand api instead of next
     const getRecs = async () => {
-        const recsResponse = await fetch("/api/search/recs", {
-            method: "POST",
-            body: JSON.stringify({query: "news"})
-        });
-        const recsResults = await recsResponse.json();
-        dispatch({type: "update_recs", recs: recsResults});
-    }
 
-    const getSummary = async (index: number, link: string) => {
-        console.log("summmmm")
-
-        const browse_page = state.browse_pages[index];
-        dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: ""} as BrowsePageState});
-
-        let res: Response
-        let data = null
-
-        let api_key: string;
-        if (typeof(state.api_keys[state.model_provider_name] === "undefined")) {
-            api_key = "";
-        }
-        else {
-            api_key = state.api_keys[state.model_provider_name];
-        }
-        res = await fetch(`/api/summary/${state.model_provider_name}/${state.model_name}`, {
-            method: "POST",
-            body: JSON.stringify({link: link})
-        });
-        data = res.body;
-
-        if (!data) {
-            return;
-        }
-
-        const reader = data.getReader();
-        const decoder = new TextDecoder();
-        let done = false;
-
-        while (!done) {
-            const {value, done: doneReading} = await reader.read();
-            done  = doneReading;
-            const chunkValue = decoder.decode(value);
-            const browse_page = state.browse_pages[index];
-            dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: browse_page.summary + chunkValue} as BrowsePageState});
-        }
     }
 
     return (
         <StateContext.Provider value={state}>
             <DispatchContext.Provider value={dispatch}>
-                    {/* <Tabs className="w-full bg-green-200" selectedIndex={Number(state.tab)}>
-                        <TabList className="flex justify-start items-center h-[40px] text-black">
-                            <Tab className="flex justify-center items-center w-[250px] border-r-[1px] border-black h-full focus:outline-0">
-                                <button onClick={() => {dispatch({type: "update_tab", tab: "0"})}} className="flex justify-center items-center hover:bg-yellow-100 h-full w-full px-4 truncate">Search</button>
-                            </Tab>
-                            {
-                                state.browse_pages.map((page: BrowsePageState, i: number) => { 
-                                    if (page.summary === null) {
-                                        getSummary(i, page.search_result.link);
-                                    }
-                                    return (
-                                    <Tab key={i} className="flex justify-center items-center w-[250px] border-r-[1px] border-black h-full focus:outline-0">
-                                        <button onClick={() => {console.log(i); dispatch({type: "update_tab", tab: String(i+1)})}} className="flex justify-center items-center hover:bg-yellow-100 h-full w-full px-4 truncate">
-                                            <p className="truncate">{page.search_result.title}</p>
-                                        </button>
-                                        <button onClick={() => {console.log(i); dispatch({type: "delete_browse_page", index: i})}} className="py-2 px-4 hover:bg-yellow-100">X</button>
-                                    </Tab>
-                                )})
-                            }
-                        </TabList>
-
-                        <TabPanel className="bg-red-100">
-                            <div className="flex h-[calc(100vh_-_40px)]">
-                            {state.initial ?
-                            <SearchInitial handleSearch={handleSearch} getRecs={getRecs}/> : 
-                            <SearchResults handleSearch={handleSearch}/>}
-                            <ConfigBar />
-                            </div>
-                        </TabPanel>
-                        {
-                            state.browse_pages.map((page: BrowsePageState, i: number) => (
-                                <TabPanel key={i}>
-                                    <div className="h-[calc(100vh_-_40px)]">
-                                        <Browse index={i} browse_page_state={page} getSummary={getSummary}/>
-                                    </div>
-                                </TabPanel>
-                            ))
-                        }
-                   </Tabs> */}
                    <div className="flex w-full">
                     {state.initial ?
                     <SearchInitial handleSearch={handleSearch} getRecs={getRecs}/> : 
