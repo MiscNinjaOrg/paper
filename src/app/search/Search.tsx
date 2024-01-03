@@ -5,8 +5,12 @@ import { RefObject, useEffect, useReducer } from "react";
 import { ConfigBar } from "./ConfigBar";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
-import { Browse } from "./Browse";
-import { SearchResult } from "../api/search/serp/route";
+
+interface SearchResult {
+    link: string;
+    title: string;
+    snippet: string;
+}
 
 export interface Dictionary<T> {
     [Key: string]: T;
