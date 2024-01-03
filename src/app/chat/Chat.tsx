@@ -1,4 +1,3 @@
-"use client"
 import InputBox from "./InputBox"
 import ChatBox from "./ChatBox"
 import Message from "./Message"

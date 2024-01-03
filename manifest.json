@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "MiscNinja",
+    "version": "1.0.0",
+    "permissions": ["contextMenus"],
+    "icons": {
+      "16": "src/extension/icon.png",
+      "48": "src/extension/icon.png",
+      "128": "src/extension/icon.png"
+    },
+    "action": {
+      "default_popup": "src/extension/popup.html"
+    },
+    "background": {
+      "service_worker": "src/extension/background.js"
+    },
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "run_at": "document_idle",
+        "js": ["src/extension/content.tsx"],
+        "type": "module"
+      }
+    ]
+}

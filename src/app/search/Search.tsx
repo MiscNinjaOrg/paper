@@ -14,7 +14,7 @@ export interface Dictionary<T> {
 
 export interface BrowsePageState {
     search_result: SearchResult;
-    summary: string;
+    summary: string | null;
 }
 
 // this state-action reducer is supposed to handle the current state of the entire search app - including the current query (and whether or not we are on the initial screen), the current search results (both the sources and the answer being streamed)
@@ -115,7 +115,7 @@ function reducer(state:State, action: Actions): State {
         case "create_browse_page":
             return {
                 ...state,
-                browse_pages: [...state.browse_pages, {search_result: action.search_result, summary: ""} as BrowsePageState],
+                browse_pages: [...state.browse_pages, {search_result: action.search_result, summary: null} as BrowsePageState],
                 tab: String(state.browse_pages.length + 1)
             }
         case "delete_browse_page":
@@ -160,11 +160,15 @@ export function Search() {
         if (ref && ref.current) {
             const query = ref.current.value;
             if (query != "") {
-                const serpResponse = await fetch("/api/search/serp", {
+                const serpResponse = await fetch("http://0.0.0.0:8000/serp", {
                     method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
                     body: JSON.stringify({query: query})
                 });
                 const serpResults = await serpResponse.json();
+                console.log(serpResults);
 
                 dispatch({type: "update_sources", sources: serpResults});
                 dispatch({type: "update_initial"});
@@ -174,16 +178,12 @@ export function Search() {
                 let res: Response
                 let data = null
 
-                let api_key: string;
-                if (typeof(state.api_keys[state.model_provider_name] === "undefined")) {
-                    api_key = "";
-                }
-                else {
-                    api_key = state.api_keys[state.model_provider_name];
-                }
-                res = await fetch(`/api/search/${state.model_provider_name}/${state.model_name}`, {
+                res = await fetch(`http://0.0.0.0:8000/search/${state.model_name}`, {
                     method: "POST",
-                    body: JSON.stringify({query: query, sources: serpResults, api_key: api_key})
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify({query: query, sources: serpResults})
                 });
                 data = res.body;
 
@@ -215,6 +215,7 @@ export function Search() {
     }
 
     const getSummary = async (index: number, link: string) => {
+        console.log("summmmm")
 
         const browse_page = state.browse_pages[index];
         dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: ""} as BrowsePageState});
@@ -255,20 +256,24 @@ export function Search() {
     return (
         <StateContext.Provider value={state}>
             <DispatchContext.Provider value={dispatch}>
-                    <Tabs className="w-full bg-green-200" selectedIndex={Number(state.tab)}>
+                    {/* <Tabs className="w-full bg-green-200" selectedIndex={Number(state.tab)}>
                         <TabList className="flex justify-start items-center h-[40px] text-black">
                             <Tab className="flex justify-center items-center w-[250px] border-r-[1px] border-black h-full focus:outline-0">
                                 <button onClick={() => {dispatch({type: "update_tab", tab: "0"})}} className="flex justify-center items-center hover:bg-yellow-100 h-full w-full px-4 truncate">Search</button>
                             </Tab>
                             {
-                                state.browse_pages.map((page: BrowsePageState, i: number) => (
+                                state.browse_pages.map((page: BrowsePageState, i: number) => { 
+                                    if (page.summary === null) {
+                                        getSummary(i, page.search_result.link);
+                                    }
+                                    return (
                                     <Tab key={i} className="flex justify-center items-center w-[250px] border-r-[1px] border-black h-full focus:outline-0">
                                         <button onClick={() => {console.log(i); dispatch({type: "update_tab", tab: String(i+1)})}} className="flex justify-center items-center hover:bg-yellow-100 h-full w-full px-4 truncate">
                                             <p className="truncate">{page.search_result.title}</p>
                                         </button>
                                         <button onClick={() => {console.log(i); dispatch({type: "delete_browse_page", index: i})}} className="py-2 px-4 hover:bg-yellow-100">X</button>
                                     </Tab>
-                                ))
+                                )})
                             }
                         </TabList>
 
@@ -289,7 +294,13 @@ export function Search() {
                                 </TabPanel>
                             ))
                         }
-                   </Tabs>
+                   </Tabs> */}
+                   <div className="flex w-full">
+                    {state.initial ?
+                    <SearchInitial handleSearch={handleSearch} getRecs={getRecs}/> : 
+                    <SearchResults handleSearch={handleSearch}/>}
+                    <ConfigBar />
+                    </div>
            </DispatchContext.Provider>
         </StateContext.Provider>
     )

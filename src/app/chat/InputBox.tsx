@@ -47,17 +47,13 @@ export default function InputBox() {
 
                 let res: Response
                 let data = null
-
-                let api_key: string;
-                if (typeof(state.api_keys[state.model_provider_name] === "undefined")) {
-                    api_key = "";
-                }
-                else {
-                    api_key = state.api_keys[state.model_provider_name];
-                }
-                res = await fetch(`/api/chat/${state.model_provider_name}/${state.model_name}`, {
+                
+                res = await fetch(`http://0.0.0.0:8000/chat/${state.model_name}`, {
                     method: "POST",
-                    body: JSON.stringify({messages: state.messages, prompt: prompt, api_key: api_key})
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify({messages: state.messages, prompt: prompt})
                 });
                 data = res.body;
 

@@ -54,16 +54,16 @@ function SearchSources({sources}: {sources: any}) {
             //     }
             // </ReactMarkdown>
             <div key={i} className="bg-green-100 my-2 p-4 rounded-lg">
-                Source {source.position}: <br/>
-                <a href={source.link} className="underline bg-blue-100 bg-opacity-0 hover:bg-opacity-100">
+                Source {i+1}: <br/>
+                <a href={source.link} target="_blank" rel="noopener noreferrer" className="underline bg-blue-100 bg-opacity-0 hover:bg-opacity-100">
                     {source.title}
                 </a>
                 <div>
                     {source.snippet}
                 </div>
-                <button onClick={() => {dispatch({type: "create_browse_page", search_result: source})}} className="min-w-[400px] flex justify-center items-center bg-red-100 mt-8 py-2 rounded-lg">
+                {/* <button onClick={() => {dispatch({type: "create_browse_page", search_result: source})}} className="min-w-[400px] flex justify-center items-center bg-red-100 mt-8 py-2 rounded-lg">
                     Open with MiscNinja
-                </button>
+                </button> */}
             </div>
             ))}
         </div>

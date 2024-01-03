@@ -1,9 +1,7 @@
 export interface SearchResult {
-    position: number;
     link: string;
     title: string;
     snippet: string;
-    sitelinks: [];
 }
 
 export async function POST(req: Request) {
