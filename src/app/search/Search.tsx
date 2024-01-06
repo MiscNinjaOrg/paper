@@ -12,6 +12,11 @@ interface SearchResult {
     snippet: string;
 }
 
+interface ImageResult {
+    imageURL: string;
+    imageLink: string;
+}
+
 export interface Dictionary<T> {
     [Key: string]: T;
 }
@@ -25,33 +30,24 @@ export interface Dictionary<T> {
 export interface State {
     initial: boolean;
     recs: any | null;
-    // model_provider_name: string;
     model_name: string;
-    // api_keys: Dictionary<string>;
     query: string | null;
     sources: any | null;
+    images: any | null;
     answer: string | null;
     config_visible: boolean;
-    // tab: string;
-    // browse_pages: BrowsePageState[];
 }
 
 type UpdateInitial = {type: "update_initial"};
 type UpdateRecs = {type: "update_recs", recs: any};
-// type UpdateModelProvider = {type: "update_model_provider", model_provider_name: string};
 type UpdateModel = {type: "update_model", model_name: string};
-// type UpdateAPIKey = {type: "update_api_key", provider: string, key: string}
 type UpdateQuery = {type: "update_query", query: string};
 type ClearAnswer = {type: "clear_answer"};
 type UpdateSources = {type: "update_sources", sources: any};
+type UpdateImages = {type: "update_images", images: any};
 type UpdateAnswer = {type: "update_answer", answer: string};
 type ToggleConfig = {type: "toggle_config"};
-// type UpdateTab = {type: "update_tab", tab: string};
-// type CreateBrowsePage = {type: "create_browse_page", search_result: SearchResult};
-// type DeleteBrowsePage = {type: "delete_browse_page", index: number};
-// type UpdateBrowsePages = {type: "update_browse_pages", index: number, browse_page: BrowsePageState}
-// export type Actions = UpdateInitial | UpdateRecs | UpdateModelProvider | UpdateModel | UpdateAPIKey | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig | UpdateTab | CreateBrowsePage | DeleteBrowsePage | UpdateBrowsePages;
-export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateQuery | ClearAnswer | UpdateSources | UpdateAnswer | ToggleConfig;
+export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateQuery | ClearAnswer | UpdateSources | UpdateImages | UpdateAnswer | ToggleConfig;
 
 function reducer(state:State, action: Actions): State {
     switch (action.type) {
@@ -65,23 +61,11 @@ function reducer(state:State, action: Actions): State {
                 ...state,
                 recs: action.recs
             };
-        // case "update_model_provider":
-        //     return {
-        //         ...state,
-        //         model_provider_name: action.model_provider_name
-        //     };
         case "update_model":
             return {
                 ...state,
                 model_name: action.model_name
             };
-        // case "update_api_key":
-        //     let keys = state.api_keys;
-        //     keys[action.provider as string] = action.key;
-        //     return {
-        //         ...state,
-        //         api_keys: keys
-        //     };
         case "update_query":
             return {
                 ...state,
@@ -95,7 +79,7 @@ function reducer(state:State, action: Actions): State {
         case "update_answer":
             let answerUpdated = String(state.answer) + action.answer;
             for (let i = 1; i <= state.sources.length; i++) {
-                answerUpdated = answerUpdated.replaceAll(`[${i}]`, `<span className="bg-blue-300 hover:bg-blue-500 text-xs p-1 rounded-xl"><a href="${state.sources[i-1].link}" target="_blank" rel="noopener noreferrer">Source ${i}</a></span>`);
+                answerUpdated = answerUpdated.replaceAll(`[${i}]`, `<span className="bg-teal-300 hover:bg-teal-500 text-xs p-1 rounded-xl"><a href="${state.sources[i-1].link}" target="_blank" rel="noopener noreferrer">Source ${i}</a></span>`);
             }
             answerUpdated = answerUpdated.split("Sources: ")[0]
             return {
@@ -107,37 +91,16 @@ function reducer(state:State, action: Actions): State {
                 ...state,
                 sources: action.sources
             };
+        case "update_images":
+            return {
+                ...state,
+                images: action.images
+            };
         case "toggle_config":
             return {
                 ...state,
                 config_visible: !state.config_visible
             };
-        // case "update_tab":
-        //     return {
-        //         ...state,
-        //         tab: action.tab
-        //     };
-        // case "create_browse_page":
-        //     return {
-        //         ...state,
-        //         browse_pages: [...state.browse_pages, {search_result: action.search_result, summary: null} as BrowsePageState],
-        //         tab: String(state.browse_pages.length + 1)
-        //     }
-        // case "delete_browse_page":
-        //     const pagesCopy = [...state.browse_pages];
-        //     const removed = pagesCopy.splice(action.index, 1);
-        //     return {
-        //         ...state,
-        //         browse_pages: pagesCopy,
-        //         tab: String(Math.min(Number(state.tab), state.browse_pages.length - 1))
-        //     };
-        // case "update_browse_pages":
-        //     let browse_pages = state.browse_pages;
-        //     browse_pages[action.index] = action.browse_page;
-        //     return {
-        //         ...state,
-        //         browse_pages: browse_pages,
-        //     };
         default:
             return state;
     }
@@ -153,7 +116,7 @@ export function Search() {
     }
     else {
         // state_to_use = {initial: true, recs: null, model_provider_name: "openai", model_name: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false, tab: "0", browse_pages: []};
-        state_to_use = {initial: true, recs: null, model_name: "gpt-3.5-turbo", query: null, sources: null, answer: null, config_visible: false};
+        state_to_use = {initial: true, recs: null, model_name: "gpt-3.5-turbo", query: null, sources: null, images: null, answer: null, config_visible: false};
     }
 
     const [state, dispatch] = useReducer(reducer, state_to_use);
@@ -174,9 +137,18 @@ export function Search() {
                     body: JSON.stringify({query: query})
                 });
                 const serpResults = await serpResponse.json();
-                console.log(serpResults);
+
+                const imagesResponse = await fetch("http://0.0.0.0:8000/serp/images", {
+                    method: "POST",
+                    headers: {
+                        "Content-type": "application/json"
+                    },
+                    body: JSON.stringify({query: query})
+                });
+                const images = await imagesResponse.json();
 
                 dispatch({type: "update_sources", sources: serpResults});
+                dispatch({type: "update_images", images: images});
                 dispatch({type: "update_initial"});
                 dispatch({type: "clear_answer"});
                 dispatch({type: "update_query", query: query});
@@ -211,57 +183,16 @@ export function Search() {
         }
     }
 
-    // const getRecs = async () => {
-    //     const recsResponse = await fetch("/api/search/recs", {
-    //         method: "POST",
-    //         body: JSON.stringify({query: "news"})
-    //     });
-    //     const recsResults = await recsResponse.json();
-    //     dispatch({type: "update_recs", recs: recsResults});
-    // }
-
-    // const getSummary = async (index: number, link: string) => {
-    //     console.log("summmmm")
-
-    //     const browse_page = state.browse_pages[index];
-    //     dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: ""} as BrowsePageState});
-
-    //     let res: Response
-    //     let data = null
-
-    //     let api_key: string;
-    //     if (typeof(state.api_keys[state.model_provider_name] === "undefined")) {
-    //         api_key = "";
-    //     }
-    //     else {
-    //         api_key = state.api_keys[state.model_provider_name];
-    //     }
-    //     res = await fetch(`/api/summary/${state.model_provider_name}/${state.model_name}`, {
-    //         method: "POST",
-    //         body: JSON.stringify({link: link})
-    //     });
-    //     data = res.body;
-
-    //     if (!data) {
-    //         return;
-    //     }
-
-    //     const reader = data.getReader();
-    //     const decoder = new TextDecoder();
-    //     let done = false;
-
-    //     while (!done) {
-    //         const {value, done: doneReading} = await reader.read();
-    //         done  = doneReading;
-    //         const chunkValue = decoder.decode(value);
-    //         const browse_page = state.browse_pages[index];
-    //         dispatch({type: "update_browse_pages", index: index, browse_page: {search_result: browse_page.search_result, summary: browse_page.summary + chunkValue} as BrowsePageState});
-    //     }
-    // }
-
-    // write with sand api instead of next
     const getRecs = async () => {
-
+        const recsResponse = await fetch("http://0.0.0.0:8000/serp/news", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({query: "news"})
+        });
+        const recsResults = await recsResponse.json();
+        dispatch({type: "update_recs", recs: recsResults});
     }
 
     return (
