@@ -10,12 +10,12 @@ import { Code } from "../code/Code";
 // this state-action reducer is meant to handle switching between the apps in the sidebar - search, chat, code, etc.
 export interface State {
     app: string;
+    dark: boolean;
 }
-  
-export interface Actions {
-    type: string;
-    app: string;
-}
+
+type SwitchApp = {type: "switch_app", app: string};
+type ToggleDark = {type: "toggle_dark"};
+export type Actions = SwitchApp | ToggleDark;
 
 function reducer (state: State, action: Actions): State {
     switch (action.type) {
@@ -24,15 +24,21 @@ function reducer (state: State, action: Actions): State {
                 ...state,
                 app: action.app
             };
+        case "toggle_dark":
+            return {
+                ...state,
+                dark: !state.dark
+            };
         default:
-        return state;
+            return state;
     }
 }
 
 // for when deploying with next auth
 export function HomeLoggedIn({userEmail, userImage, userName}: {userEmail: string | null | undefined, userImage: string | null | undefined, userName: string | null | undefined}) {
     const [state, dispatch] = useReducer(reducer, {
-        app: "search"
+        app: "search",
+        dark: false
     });
 
     const user = {
@@ -68,7 +74,8 @@ export function HomeLoggedIn({userEmail, userImage, userName}: {userEmail: strin
 // for when deploying locally with no auth required
 export function HomeNoAuth() {
     const [state, dispatch] = useReducer(reducer, {
-        app: "search"
+        app: "search",
+        dark: true
     });
 
     const getCurrentApp = (app: string) => {
@@ -83,7 +90,7 @@ export function HomeNoAuth() {
     return (
         <StateContext.Provider value={state}>
             <DispatchContext.Provider value={dispatch}>
-                    <main className='flex'>
+                    <main className={`flex ${state.dark?`dark`:``}`}>
                         <SidebarNoAuth />
                         { getCurrentApp(state.app) }
                     </main>

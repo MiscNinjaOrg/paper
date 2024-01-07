@@ -43,13 +43,16 @@ export function SidebarNoAuth() {
     const dispatch = useContext(DispatchContext);
 
     return (
-        <div className="flex h-screen w-[100px] flex-col justify-between items-center">
-            <div className="flex-auto justify-center items-center bg-slate-100 w-full border-r-2 border-slate-400">
+        <div className="flex h-screen bg-slate-100 dark:bg-slate-500 border-r-2 border-slate-400 w-[100px] flex-col justify-between items-center">
+            <div className="flex-auto justify-center items-center w-full">
                 <AppIcon />
                 <SearchButton onClick={() => {dispatch({type: "switch_app", app: "search"})}}/>
                 <ChatButton onClick={() => {dispatch({type: "switch_app", app: "chat"})}}/>
                 <CodeButton onClick={() => {dispatch({type: "switch_app", app: "code"})}}/>
             </div>
+            <button className='w-[40px] h-[40px] mb-6' onClick={() => {dispatch({type: "toggle_dark"})}}>
+            <svg className="h-full w-full" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <circle cx="12" cy="12" r="5" stroke="#1C274C" stroke-width="1.5"></circle> <path d="M12 2V4" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path> <path d="M12 20V22" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path> <path d="M4 12L2 12" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path> <path d="M22 12L20 12" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path> <path d="M19.7778 4.22266L17.5558 6.25424" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path> <path d="M4.22217 4.22266L6.44418 6.25424" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path> <path d="M6.44434 17.5557L4.22211 19.7779" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path> <path d="M19.7778 19.7773L17.5558 17.5551" stroke="#1C274C" stroke-width="1.5" stroke-linecap="round"></path> </g></svg>
+            </button>
         </div>
     )
 }

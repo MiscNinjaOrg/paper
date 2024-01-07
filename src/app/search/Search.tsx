@@ -30,7 +30,7 @@ export interface Dictionary<T> {
 export interface State {
     initial: boolean;
     recs: any | null;
-    model_name: string;
+    model: string;
     query: string | null;
     sources: any | null;
     images: any | null;
@@ -40,7 +40,7 @@ export interface State {
 
 type UpdateInitial = {type: "update_initial"};
 type UpdateRecs = {type: "update_recs", recs: any};
-type UpdateModel = {type: "update_model", model_name: string};
+type UpdateModel = {type: "update_model", model: string};
 type UpdateQuery = {type: "update_query", query: string};
 type ClearAnswer = {type: "clear_answer"};
 type UpdateSources = {type: "update_sources", sources: any};
@@ -64,7 +64,7 @@ function reducer(state:State, action: Actions): State {
         case "update_model":
             return {
                 ...state,
-                model_name: action.model_name
+                model: action.model
             };
         case "update_query":
             return {
@@ -79,7 +79,7 @@ function reducer(state:State, action: Actions): State {
         case "update_answer":
             let answerUpdated = String(state.answer) + action.answer;
             for (let i = 1; i <= state.sources.length; i++) {
-                answerUpdated = answerUpdated.replaceAll(`[${i}]`, `<span className="bg-teal-300 hover:bg-teal-500 text-xs p-1 rounded-xl"><a href="${state.sources[i-1].link}" target="_blank" rel="noopener noreferrer">Source ${i}</a></span>`);
+                answerUpdated = answerUpdated.replaceAll(`[${i}]`, `<span className="bg-theme-300 dark:bg-theme-500 dark:hover:bg-theme-700 hover:bg-theme-500 text-xs p-1 rounded-xl"><a href="${state.sources[i-1].link}" target="_blank" rel="noopener noreferrer">Source ${i}</a></span>`);
             }
             answerUpdated = answerUpdated.split("Sources: ")[0]
             return {
@@ -115,8 +115,8 @@ export function Search() {
         state_to_use = JSON.parse(local_search_state);
     }
     else {
-        // state_to_use = {initial: true, recs: null, model_provider_name: "openai", model_name: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false, tab: "0", browse_pages: []};
-        state_to_use = {initial: true, recs: null, model_name: "gpt-3.5-turbo", query: null, sources: null, images: null, answer: null, config_visible: false};
+        // state_to_use = {initial: true, recs: null, model_provider_name: "openai", model: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false, tab: "0", browse_pages: []};
+        state_to_use = {initial: true, recs: null, model: "gpt-3.5-turbo", query: null, sources: null, images: null, answer: null, config_visible: false};
     }
 
     const [state, dispatch] = useReducer(reducer, state_to_use);
@@ -129,7 +129,7 @@ export function Search() {
         if (ref && ref.current) {
             const query = ref.current.value;
             if (query != "") {
-                const serpResponse = await fetch("http://0.0.0.0:8000/serp", {
+                const serpResponse = await fetch(`${process.env.API}/serp`, {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"
@@ -138,7 +138,7 @@ export function Search() {
                 });
                 const serpResults = await serpResponse.json();
 
-                const imagesResponse = await fetch("http://0.0.0.0:8000/serp/images", {
+                const imagesResponse = await fetch(`${process.env.API}/serp/images`, {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"
@@ -156,7 +156,7 @@ export function Search() {
                 let res: Response
                 let data = null
 
-                res = await fetch(`http://0.0.0.0:8000/search/${state.model_name}`, {
+                res = await fetch(`${process.env.API}/search/${state.model}`, {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"
@@ -184,7 +184,8 @@ export function Search() {
     }
 
     const getRecs = async () => {
-        const recsResponse = await fetch("http://0.0.0.0:8000/serp/news", {
+        console.log(process.env.API);
+        const recsResponse = await fetch(`${process.env.API}/serp/news`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -198,7 +199,7 @@ export function Search() {
     return (
         <StateContext.Provider value={state}>
             <DispatchContext.Provider value={dispatch}>
-                   <div className="flex w-full">
+                   <div className="flex w-full text-black dark:text-white">
                     {state.initial ?
                     <SearchInitial handleSearch={handleSearch} getRecs={getRecs}/> : 
                     <SearchResults handleSearch={handleSearch}/>}
