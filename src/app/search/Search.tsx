@@ -36,6 +36,7 @@ export interface State {
     images: any | null;
     answer: string | null;
     config_visible: boolean;
+    search_disabled: boolean;
 }
 
 type UpdateInitial = {type: "update_initial"};
@@ -47,7 +48,8 @@ type UpdateSources = {type: "update_sources", sources: any};
 type UpdateImages = {type: "update_images", images: any};
 type UpdateAnswer = {type: "update_answer", answer: string};
 type ToggleConfig = {type: "toggle_config"};
-export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateQuery | ClearAnswer | UpdateSources | UpdateImages | UpdateAnswer | ToggleConfig;
+type ToggleSearchDisabled = {type: "toggle_search_disabled", disabled: boolean};
+export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateQuery | ClearAnswer | UpdateSources | UpdateImages | UpdateAnswer | ToggleConfig | ToggleSearchDisabled;
 
 function reducer(state:State, action: Actions): State {
     switch (action.type) {
@@ -101,6 +103,11 @@ function reducer(state:State, action: Actions): State {
                 ...state,
                 config_visible: !state.config_visible
             };
+        case "toggle_search_disabled":
+            return {
+                ...state,
+                search_disabled: action.disabled
+            };
         default:
             return state;
     }
@@ -116,7 +123,7 @@ export function Search() {
     }
     else {
         // state_to_use = {initial: true, recs: null, model_provider_name: "openai", model: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false, tab: "0", browse_pages: []};
-        state_to_use = {initial: true, recs: null, model: "gpt-3.5-turbo", query: null, sources: null, images: null, answer: null, config_visible: false};
+        state_to_use = {initial: true, recs: null, model: "gpt-3.5-turbo", query: null, sources: null, images: null, answer: null, config_visible: false, search_disabled: false};
     }
 
     const [state, dispatch] = useReducer(reducer, state_to_use);
@@ -131,7 +138,7 @@ export function Search() {
             if (query != "") {
                 dispatch({type: "update_initial"});
                 dispatch({type: "clear_answer"});
-                console.log(`${process.env.API}/serp`)
+                dispatch({type: "toggle_search_disabled", disabled: true});
                 const serpResponse = await fetch(`${process.env.API}/serp/serp`, {
                     method: "POST",
                     headers: {
@@ -141,7 +148,6 @@ export function Search() {
                 });
                 const serpResults = await serpResponse.json();
 
-                console.log(`${process.env.API}/serp/images`)
                 const imagesResponse = await fetch(`${process.env.API}/serp/images`, {
                     method: "POST",
                     headers: {
@@ -159,7 +165,6 @@ export function Search() {
                 let res: Response
                 let data = null
 
-                console.log(`${process.env.API}/search/${state.model}`)
                 res = await fetch(`${process.env.API}/search/${state.model}`, {
                     method: "POST",
                     headers: {
@@ -183,12 +188,12 @@ export function Search() {
                     const chunkValue = decoder.decode(value);
                     dispatch({type: "update_answer", answer: chunkValue});
                 }
+                dispatch({type: "toggle_search_disabled", disabled: true});
             }
         }
     }
 
     const getRecs = async () => {
-        console.log(process.env.API);
         const recsResponse = await fetch(`${process.env.API}/serp/news`, {
             method: "POST",
             headers: {
