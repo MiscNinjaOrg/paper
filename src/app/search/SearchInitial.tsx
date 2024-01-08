@@ -1,6 +1,7 @@
 import { TextareaAutosize } from "@mui/base";
 import { RefObject, useRef, KeyboardEvent, useContext } from "react";
 import { DispatchContext, StateContext } from "./Context";
+import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
 
 export function SearchBox({handleSearch}: {handleSearch: (ref: RefObject<HTMLTextAreaElement>) => Promise<void>}) {
 
@@ -46,7 +47,7 @@ export function SearchInitial({handleSearch, getRecs}: {handleSearch: (ref: RefO
             {state.recs?
             <div className="flex flex-wrap justify-center py-4 bg-theme-50 dark:bg-theme-700 rounded-lg border-2 border-theme-400 h-full w-1/2 min-w-[400px] mt-20 mb-20 font-mono overflow-y-scroll no-scrollbar">
                 {state.recs.map((rec: any, i: number) => (
-                    <div key={i} className="flex flex-col bg-slate-100 dark:bg-slate-600 border-2 border-slate-300 dark:border-slate-400 my-2 mx-2 p-4 rounded-lg w-[45%]">
+                    <div key={i} className={`flex flex-col bg-slate-100 dark:bg-slate-600 border-2 border-slate-300 dark:border-slate-400 my-2 mx-2 p-4 rounded-lg ${isMobile?`w-[90%]`:`w-[45%]`}`}>
                         <a href={rec.link} target="_blank" rel="noopener noreferrer" className="underline bg-transparent hover:bg-theme-100 dark:hover:bg-theme-700">
                             {rec.title}
                         </a>
