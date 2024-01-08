@@ -130,7 +130,7 @@ export function Search() {
             const query = ref.current.value;
             if (query != "") {
                 console.log(`${process.env.API}/serp`)
-                const serpResponse = await fetch(`${process.env.API}/serp`, {
+                const serpResponse = await fetch(`${process.env.API}/serp/serp`, {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"
