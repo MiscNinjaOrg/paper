@@ -129,6 +129,7 @@ export function Search() {
         if (ref && ref.current) {
             const query = ref.current.value;
             if (query != "") {
+                console.log(`${process.env.API}/serp`)
                 const serpResponse = await fetch(`${process.env.API}/serp`, {
                     method: "POST",
                     headers: {
@@ -138,6 +139,7 @@ export function Search() {
                 });
                 const serpResults = await serpResponse.json();
 
+                console.log(`${process.env.API}/serp/images`)
                 const imagesResponse = await fetch(`${process.env.API}/serp/images`, {
                     method: "POST",
                     headers: {
@@ -156,6 +158,7 @@ export function Search() {
                 let res: Response
                 let data = null
 
+                console.log(`${process.env.API}/search/${state.model}`)
                 res = await fetch(`${process.env.API}/search/${state.model}`, {
                     method: "POST",
                     headers: {
