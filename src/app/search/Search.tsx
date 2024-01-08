@@ -188,7 +188,7 @@ export function Search() {
                     const chunkValue = decoder.decode(value);
                     dispatch({type: "update_answer", answer: chunkValue});
                 }
-                dispatch({type: "toggle_search_disabled", disabled: true});
+                dispatch({type: "toggle_search_disabled", disabled: false});
             }
         }
     }
