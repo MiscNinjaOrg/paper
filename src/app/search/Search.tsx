@@ -129,6 +129,8 @@ export function Search() {
         if (ref && ref.current) {
             const query = ref.current.value;
             if (query != "") {
+                dispatch({type: "update_initial"});
+                dispatch({type: "clear_answer"});
                 console.log(`${process.env.API}/serp`)
                 const serpResponse = await fetch(`${process.env.API}/serp/serp`, {
                     method: "POST",
@@ -151,7 +153,6 @@ export function Search() {
 
                 dispatch({type: "update_sources", sources: serpResults});
                 dispatch({type: "update_images", images: images});
-                dispatch({type: "update_initial"});
                 dispatch({type: "clear_answer"});
                 dispatch({type: "update_query", query: query});
 

@@ -120,10 +120,18 @@ export function SearchResults({handleSearch}: {handleSearch: (ref: RefObject<HTM
             <div className="flex w-full h-full justify-center items-center bg-white dark:bg-slate-800 overflow-y-scroll">
                 <div className="flex flex-col justify-start items-center w-full h-full px-10">
                     <SearchAnswer answer={state.answer?.split("Sources:")[0].split("Source:")[0] as string} />
-                    <SearchSources sources={state.sources}/>
+                    {
+                        state.sources?
+                        <SearchSources sources={state.sources}/>
+                        :<></>
+                    }
                 </div>
                 <div className="flex flex-col justify-start items-center h-full w-[40%] p-8">
-                    <Images images={state.images} />
+                    {
+                        state.images?
+                        <Images images={state.images} />
+                        :<></>
+                    }
                 </div>
             </div>
         </div>
