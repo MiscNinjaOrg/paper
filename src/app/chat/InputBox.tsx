@@ -6,6 +6,7 @@ import { TextareaAutosize } from "@mui/base";
 import { PuffLoader } from "react-spinners";
 import { StateContext, DispatchContext } from "./Context";
 import { State } from "./Chat";
+import { isMobile } from "react-device-detect";
 
 function UploadButton() {
     return (
@@ -38,7 +39,7 @@ export default function InputBox({handlePromptNew}: {handlePromptNew: (promptInp
     }
 
     return (
-        <div className="flex flex-row justify-evenly items-center min-h-[70px] h-24 w-2/3 mb-10">
+        <div className={`flex flex-row justify-evenly items-center min-h-[70px] h-24 ${isMobile?`w-full`:`w-2/3`} mb-10`}>
             <UploadButton />
             <TextareaAutosize 
             ref={promptInput}
@@ -53,7 +54,7 @@ export default function InputBox({handlePromptNew}: {handlePromptNew: (promptInp
                     handlePromptLocal();
                 }
             }}
-            className="dark:bg-slate-600 bg-slate-100 border-2 border-theme-200 focus:border-theme-400 focus:outline-theme-400 focus:shadow-lg focus:shadow-theme-400 resize-none pl-6 pr-6 pt-3 pb-3 ml-4 mr-4 h-full w-full rounded-lg text-lg font-mono"
+            className={`dark:bg-slate-600 bg-slate-100 border-2 border-theme-200 focus:border-theme-400 focus:outline-theme-400 focus:shadow-lg focus:shadow-theme-400 resize-none pl-6 pr-6 pt-3 pb-3 ${isMobile?`mx-2`:`mx-4`} h-full w-full rounded-lg text-lg font-mono`}
             placeholder="What's up?"
             defaultValue=""
             />

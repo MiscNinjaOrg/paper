@@ -3,6 +3,7 @@ import ChatBox from "./ChatBox"
 import { Dispatch, RefObject, useEffect, useReducer } from "react";
 import { StateContext, DispatchContext } from "./Context";
 import { ConfigBar } from "./ConfigBar";
+import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
 
 // export interface Dictionary<T> {
 //     [Key: string]: T;

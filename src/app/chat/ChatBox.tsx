@@ -4,6 +4,7 @@ import { StateContext } from "./Context";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
+import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
 
 interface MessageProps {
     role: "human" | "ai" | "system";
@@ -82,7 +83,7 @@ export default function ChatBox() {
     }, [state.messages]);
 
     return (
-        <div className="flex-auto items-center bg-theme-50 dark:bg-theme-700 w-2/3 h-full rounded-xl border-solid border-4 border-theme-400 m-10 py-6 px-10 overflow-auto no-scrollbar shadow-lg shadow-theme-400 outline-theme-400">
+        <div className={`flex-auto items-center bg-theme-50 dark:bg-theme-700 ${isMobile?`w-[90%]`:`w-2/3`} h-full rounded-xl border-solid border-4 border-theme-400 m-10 ${isMobile?`mt-20`:``} py-6 ${isMobile?`px-6`:`px-10`} overflow-auto no-scrollbar shadow-lg shadow-theme-400 outline-theme-400`}>
             {state.messages.map((message, i) => (
                 <MessageElement
                 key={i}

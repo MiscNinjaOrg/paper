@@ -1,7 +1,8 @@
 import { SearchInitial } from "./SearchInitial";
 import { SearchResults } from "./SearchResults";
 import { StateContext, DispatchContext } from "./Context";
-import { RefObject, useEffect, useReducer } from "react";
+import { StateContext as AppStateContext, DispatchContext as AppDispatchContext} from "../home/Context";
+import { RefObject, useContext, useEffect, useReducer } from "react";
 import { ConfigBar } from "./ConfigBar";
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
@@ -28,7 +29,7 @@ export interface Dictionary<T> {
 
 // this state-action reducer is supposed to handle the current state of the entire search app - including the current query (and whether or not we are on the initial screen), the current search results (both the sources and the answer being streamed)
 export interface State {
-    initial: boolean;
+    // initial: boolean;
     recs: any | null;
     model: string;
     query: string | null;
@@ -53,11 +54,11 @@ export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateQuery | C
 
 function reducer(state:State, action: Actions): State {
     switch (action.type) {
-        case "update_initial":
-            return {
-                ...state,
-                initial: false
-            };
+        // case "update_initial":
+        //     return {
+        //         ...state,
+        //         initial: false
+        //     };
         case "update_recs":
             return {
                 ...state,
@@ -113,7 +114,7 @@ function reducer(state:State, action: Actions): State {
     }
 }
 
-export function Search() {
+export function Search({initial}: {initial:boolean}) {
 
     let state_to_use: State;
     const local_search_state = sessionStorage.getItem('search_state');
@@ -123,10 +124,12 @@ export function Search() {
     }
     else {
         // state_to_use = {initial: true, recs: null, model_provider_name: "openai", model: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false, tab: "0", browse_pages: []};
-        state_to_use = {initial: true, recs: null, model: "gpt-3.5-turbo", query: null, sources: null, images: null, answer: null, config_visible: false, search_disabled: false};
+        state_to_use = {recs: null, model: "gpt-3.5-turbo", query: null, sources: null, images: null, answer: null, config_visible: false, search_disabled: false};
     }
 
     const [state, dispatch] = useReducer(reducer, state_to_use);
+    const appState = useContext(AppStateContext);
+    const appDispatch = useContext(AppDispatchContext);
 
     useEffect(() => {
         sessionStorage.setItem("search_state", JSON.stringify(state));
@@ -136,8 +139,12 @@ export function Search() {
         if (ref && ref.current) {
             const query = ref.current.value;
             if (query != "") {
-                dispatch({type: "update_initial"});
+                // dispatch({type: "update_initial"});
+                appDispatch({type: "toggle_search_initial", search_initial: false});
                 dispatch({type: "clear_answer"});
+                dispatch({type: "update_query", query: query});
+                dispatch({type: "update_sources", sources: null});
+                dispatch({type: "update_images", images: null});
                 dispatch({type: "toggle_search_disabled", disabled: true});
                 const serpResponse = await fetch(`${process.env.API}/serp/serp`, {
                     method: "POST",
@@ -160,7 +167,6 @@ export function Search() {
                 dispatch({type: "update_sources", sources: serpResults});
                 dispatch({type: "update_images", images: images});
                 dispatch({type: "clear_answer"});
-                dispatch({type: "update_query", query: query});
 
                 let res: Response
                 let data = null
@@ -209,7 +215,7 @@ export function Search() {
         <StateContext.Provider value={state}>
             <DispatchContext.Provider value={dispatch}>
                    <div className="flex w-full text-black dark:text-white">
-                    {state.initial ?
+                    {initial ?
                     <SearchInitial handleSearch={handleSearch} getRecs={getRecs}/> : 
                     <SearchResults handleSearch={handleSearch}/>}
                     <ConfigBar />
