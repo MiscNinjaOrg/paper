@@ -101,7 +101,7 @@ export function HomeLoggedIn({userEmail, userImage, userName}: {userEmail: strin
 export function HomeNoAuth() {
     const [state, dispatch] = useReducer(reducer, {
         app: "search",
-        search_initial: true,
+        search_initial: false,
         dark: window.matchMedia("(prefers-color-scheme: dark)").matches,
         sidebar_visible: false
     });

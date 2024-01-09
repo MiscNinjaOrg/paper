@@ -42,12 +42,20 @@ function SearchAnswer({answer}: {answer: string | null}) {
     )
 }
 
-function SearchSources({sources}: {sources: any}) {
+function SearchSources({query, sources}: {query: string, sources: any}) {
 
     const dispatch = useContext(DispatchContext);
 
     return (
          <div className="flex flex-col w-full mt-4 mb-8 p-6 bg-theme-50 dark:bg-theme-700 border-2 border-slate-400 rounded-xl font-mono">
+            <div className="flex flex-col w-full mb-4 justify-center items-center">
+                <ReactMarkdown className="text-lg" remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                    Sources
+                </ReactMarkdown> 
+                <button className="bg-theme-300 dark:bg-theme-900 rounded-full py-2 px-6 mt-4 text-sm">
+                    <a href={`https://www.google.com/search?q=${query}`} target="_blank" rel="noopener noreferrer" className="h-full w-full">Open in Google</a>
+                </button>
+            </div>
             {sources.map((source: any, i: number) => (
             // <ReactMarkdown key={i} remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
             //     {
@@ -72,12 +80,17 @@ function SearchSources({sources}: {sources: any}) {
     )
 }
 
-function Images({images}: {images: any}) {
+function Images({query, images}: {query: string, images: any}) {
     return (
         <div className="flex flex-col justify-start bg-slate-50 dark:bg-slate-600 border-2 pt-4 pb-4 border-theme-400 rounded-md items-center w-full h-[650px] font-mono text-lg">
-            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+            <div className="flex flex-col w-full mb-4 justify-center items-center">
+                <ReactMarkdown className="text-lg" remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
                     Images
-            </ReactMarkdown> 
+                </ReactMarkdown> 
+                <button className="bg-theme-300 dark:bg-theme-900 rounded-full py-2 px-6 mt-4 text-sm">
+                    <a href={`https://www.google.com/search?tbm=isch&q=${query}`} target="_blank" rel="noopener noreferrer" className="h-full w-full">Open in Google</a>
+                </button>
+            </div>
             <div className="flex justify-evenly items-center h-[50%] w-full">
                 <a href={images[0].imageLink} target="_blank" rel="noopener noreferrer" className="max-h-[90%] max-w-[60%] hover:scale-110 transition-all overflow-clip aspect-square border-2 border-theme-400 rounded-lg shadow-lg shadow-theme-200">
                 <img src={images[0].imageURL} className="object-cover h-full w-full rounded-md"></img>
@@ -126,7 +139,7 @@ export function SearchResults({handleSearch}: {handleSearch: (ref: RefObject<HTM
                         <SearchAnswer answer={state.answer?.split("Sources:")[0].split("Source:")[0] as string} />
                         {
                             state.sources?
-                            <SearchSources sources={state.sources}/>
+                            <SearchSources query={state.query as string} sources={state.sources}/>
                             :<></>
                         }
                     </div>
@@ -152,14 +165,14 @@ export function SearchResults({handleSearch}: {handleSearch: (ref: RefObject<HTM
                         <SearchAnswer answer={state.answer?.split("Sources:")[0].split("Source:")[0] as string} />
                         {
                             state.sources?
-                            <SearchSources sources={state.sources}/>
+                            <SearchSources query={state.query as string} sources={state.sources}/>
                             :<></>
                         }
                     </div>
                     <div className="flex flex-col justify-start items-center h-full w-[40%] p-8">
                         {
                             state.images?
-                            <Images images={state.images} />
+                            <Images images={state.images} query={state.query as string}/>
                             :<></>
                         }
                     </div>
