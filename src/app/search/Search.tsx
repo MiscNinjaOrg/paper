@@ -135,6 +135,19 @@ export function Search({initial}: {initial:boolean}) {
         sessionStorage.setItem("search_state", JSON.stringify(state));
     }, [state]);
 
+    const getImages = async (query: string) => {
+        const imagesResponse = await fetch(`${process.env.API}/serp/images`, {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json"
+            },
+            body: JSON.stringify({query: query})
+        });
+        const images = await imagesResponse.json();
+
+        dispatch({type: "update_images", images: images});
+    }
+
     const handleSearch = async (ref: RefObject<HTMLTextAreaElement>) => {
         if (ref && ref.current) {
             const query = ref.current.value;
@@ -146,6 +159,9 @@ export function Search({initial}: {initial:boolean}) {
                 dispatch({type: "update_sources", sources: null});
                 dispatch({type: "update_images", images: null});
                 dispatch({type: "toggle_search_disabled", disabled: true});
+
+                getImages(query);
+
                 const serpResponse = await fetch(`${process.env.API}/serp/serp`, {
                     method: "POST",
                     headers: {
@@ -155,17 +171,7 @@ export function Search({initial}: {initial:boolean}) {
                 });
                 const serpResults = await serpResponse.json();
 
-                const imagesResponse = await fetch(`${process.env.API}/serp/images`, {
-                    method: "POST",
-                    headers: {
-                        "Content-type": "application/json"
-                    },
-                    body: JSON.stringify({query: query})
-                });
-                const images = await imagesResponse.json();
-
                 dispatch({type: "update_sources", sources: serpResults});
-                dispatch({type: "update_images", images: images});
                 dispatch({type: "clear_answer"});
 
                 let res: Response
