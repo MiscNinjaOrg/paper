@@ -32,6 +32,7 @@ export interface State {
     // initial: boolean;
     recs: any | null;
     model: string;
+    search_engine: string;
     query: string | null;
     sources: any | null;
     images: any | null;
@@ -43,6 +44,7 @@ export interface State {
 type UpdateInitial = {type: "update_initial"};
 type UpdateRecs = {type: "update_recs", recs: any};
 type UpdateModel = {type: "update_model", model: string};
+type UpdateSearchEngine = {type: "update_search_engine", search_engine: string};
 type UpdateQuery = {type: "update_query", query: string};
 type ClearAnswer = {type: "clear_answer"};
 type UpdateSources = {type: "update_sources", sources: any};
@@ -50,7 +52,7 @@ type UpdateImages = {type: "update_images", images: any};
 type UpdateAnswer = {type: "update_answer", answer: string};
 type ToggleConfig = {type: "toggle_config"};
 type ToggleSearchDisabled = {type: "toggle_search_disabled", disabled: boolean};
-export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateQuery | ClearAnswer | UpdateSources | UpdateImages | UpdateAnswer | ToggleConfig | ToggleSearchDisabled;
+export type Actions = UpdateInitial | UpdateRecs | UpdateModel | UpdateSearchEngine | UpdateQuery | ClearAnswer | UpdateSources | UpdateImages | UpdateAnswer | ToggleConfig | ToggleSearchDisabled;
 
 function reducer(state:State, action: Actions): State {
     switch (action.type) {
@@ -68,6 +70,11 @@ function reducer(state:State, action: Actions): State {
             return {
                 ...state,
                 model: action.model
+            };
+        case "update_search_engine":
+            return {
+                ...state,
+                search_engine: action.search_engine
             };
         case "update_query":
             return {
@@ -124,7 +131,7 @@ export function Search({initial}: {initial:boolean}) {
     }
     else {
         // state_to_use = {initial: true, recs: null, model_provider_name: "openai", model: "gpt-3.5-turbo", api_keys: {}, query: null, sources: null, answer: null, config_visible: false, tab: "0", browse_pages: []};
-        state_to_use = {recs: null, model: "gpt-3.5-turbo", query: null, sources: null, images: null, answer: null, config_visible: false, search_disabled: false};
+        state_to_use = {recs: null, model: "gpt-3.5-turbo", search_engine: "google", query: null, sources: null, images: null, answer: null, config_visible: false, search_disabled: false};
     }
 
     const [state, dispatch] = useReducer(reducer, state_to_use);
@@ -162,7 +169,7 @@ export function Search({initial}: {initial:boolean}) {
 
                 getImages(query);
 
-                const serpResponse = await fetch(`${process.env.API}/serp/serp`, {
+                const serpResponse = await fetch(`${process.env.API}/serp/serp_${state.search_engine}`, {
                     method: "POST",
                     headers: {
                         "Content-type": "application/json"

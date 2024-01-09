@@ -41,6 +41,12 @@ export function ConfigBar() {
                 onChange={(e) => {dispatch({type: "update_model", model: e.target.value})}}
                 items={[["gpt-3.5-turbo", "OpenAI GPT-3.5"], ["gpt-4", "OpenAI GPT-4"]]}
                 />
+                <SelectAndDispatch 
+                value={state.search_engine} 
+                label="Search Engine" 
+                onChange={(e) => {dispatch({type: "update_search_engine", search_engine: e.target.value})}}
+                items={[["google", "Google"], ["metaphor", "Metaphor"]]}
+                />
            </div>
         </div>
     )
